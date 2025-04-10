@@ -1,13 +1,13 @@
 import UserModel from "../models/user.model.js";
 import validator from "validator";
-import bcrypt from 'bcrypt'
-import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const createToken = (id)=>{
-    return jwt.sign({ id}, process.env.JWT_SECRET, {
+const createToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
-}
+};
 
 // Register a new user
 export const registerUser = async (req, res) => {
@@ -35,21 +35,21 @@ export const registerUser = async (req, res) => {
         msg: "Please enter a valid email",
       });
     }
-     if (password.length < 6) {
-       return res.json({
-         success: false,
-         msg: "Please password should exceed 6 characters",
-       });
-     }
+    if (password.length < 6) {
+      return res.json({
+        success: false,
+        msg: "Please password should exceed 6 characters",
+      });
+    }
     // Hash password and save user
-    const salt = await bcrypt.genSalt(10)
-    const hashedPassword = await bcrypt.hash(password,salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = new UserModel({ name, email, password: hashedPassword });
 
     const user = await newUser.save();
 
     // Generate token and set cookie
-    const token = createToken(user._id)
+    const token = createToken(user._id);
 
     // Set cookie with token
     // res.cookie("token", token, {
@@ -76,7 +76,7 @@ export const registerUser = async (req, res) => {
     // };
     // await transporter.sendMail(mailOptions);
 
-    return res.json({ success: true,token });
+    return res.json({ success: true, token });
   } catch (error) {
     res.json({ success: false, msg: error.message });
   }
@@ -99,38 +99,37 @@ export const loginUser = async (req, res) => {
     }
 
     // Check password
-    const isMatch = await bcryptjs.compare(password, user.password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.json({ success: false, msg: "Wrong password" });
     }
 
     // Generate token and set cookie
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = createToken(user._id);
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    // res.cookie("token", token, {
+    //   httpOnly: true,
+    //   secure: process.env.NODE_ENV === "production",
+    //   sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    //   maxAge: 7 * 24 * 60 * 60 * 1000,
+    // });
     // Send login success email
-    const mailOptions = {
-      from: process.env.SENDER_EMAIL,
-      to: email,
-      subject: "login successful",
-      html: `
-        <html>
-          <body>
-            <h2>you just logged in</h2>
-            <p>Hello!</p>
-            <p>Your have logged in successfully with email: ${email}.</p>
-          </body>
-        </html>
-      `,
-    };
-    await transporter.sendMail(mailOptions);
+    // const mailOptions = {
+    //   from: process.env.SENDER_EMAIL,
+    //   to: email,
+    //   subject: "login successful",
+    //   html: `
+    //     <html>
+    //       <body>
+    //         <h2>you just logged in</h2>
+    //         <p>Hello!</p>
+    //         <p>Your have logged in successfully with email: ${email}.</p>
+    //       </body>
+    //     </html>
+    //   `,
+    // };
+    // await transporter.sendMail(mailOptions);
+
     return res.json({ success: true });
   } catch (error) {
     return res.json({ success: false, msg: error.message });
@@ -139,7 +138,22 @@ export const loginUser = async (req, res) => {
 
 //admin login
 
-export const adminLogin = async (req, res) => {};
+export const adminLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      const token = jwt.sign(email + password, process.env.JWT_SECRET);
+      res.json({ success: true, token });
+    } else {
+      res.json({ success: false, message: "invalid credentials" });
+    }
+  } catch (error) {
+    res.json({ success: false, msg: error.message });
+  }
+};
 
 // Logout user
 export const logout = (req, res) => {
