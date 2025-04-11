@@ -20,6 +20,10 @@ const Add = ({token}) => {
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
+    if (price <= 0) {
+      toast.error("Price must be greater than 0");
+      return;
+    }
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -48,6 +52,8 @@ const Add = ({token}) => {
         setImage3(false);
         setImage4(false);
         setPrice("");
+        setSizes([]);
+        setBestSeller(false);
       } else {
         toast.error(response.data.message);
       }

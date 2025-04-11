@@ -12,7 +12,8 @@ import Login from "./pages/Login";
 import { Contact } from "./pages/Contact";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer,} from "react-toastify";
+
 
 function App() {
   return (

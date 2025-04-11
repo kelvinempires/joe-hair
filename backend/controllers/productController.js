@@ -13,6 +13,15 @@ const addProduct = async (req, res) => {
       sizes,
       bestseller,
     } = req.body;
+
+    // Validate required fields
+    if (!name || !price || !category) {
+      return res.json({
+        success: false,
+        msg: "Name, price, and category are required.",
+      });
+    }
+    
     const image1 = req.files.image1 && req.files.image1[0];
     const image2 = req.files.image2 && req.files.image2[0];
     const image3 = req.files.image3 && req.files.image3[0];
@@ -37,7 +46,7 @@ const addProduct = async (req, res) => {
       category,
       price: Number(price),
       subCategory,
-      bestseller: bestseller === "true" ? true : false,
+      bestseller: bestseller === "true" || bestseller === true || false,
       sizes: JSON.parse(sizes),
       image: imageUrl,
       date: Date.now(),
