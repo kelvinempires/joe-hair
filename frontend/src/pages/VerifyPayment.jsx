@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export const Verify = () => {
+export const VerifyPayment = () => {
   const { navigate, token, setCartItems, backendUrl } = useContext(ShopContext);
   const [searchParams] = useSearchParams();
 
@@ -40,4 +40,5 @@ export const Verify = () => {
 
   return <div></div>;
 };
-export default Verify;
+
+export default VerifyPayment
