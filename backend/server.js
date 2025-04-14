@@ -16,7 +16,14 @@ const PORT = process.env.PORT || 4000;
 // middleware
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // Replace "*" with your frontend URL for better security
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 //api end point
 
