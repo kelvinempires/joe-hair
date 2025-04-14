@@ -16,14 +16,17 @@ const PORT = process.env.PORT || 4000;
 // middleware
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: "*", // Replace "*" with your frontend URL for better security
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: [
+    "https://joel-hair-empire.vercel.app",
+    "https://joel-admin.vercel.app",
+  ],
+  methods: "GET, POST, PUT, DELETE",
+  allowedHeaders: "Content-Type, Authorization",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 //api end point
 
@@ -32,8 +35,16 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
 
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", req.headers.origin || "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  next();
+});
+app.get("/favicon.ico", (req, res) => res.status(204).end());
 app.get("/", (req, res) => {
-  res.send("app working");
+  res.json("app working");
 });
 
 app.listen(PORT, () => {
