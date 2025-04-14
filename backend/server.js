@@ -25,6 +25,7 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
 
+app.get("/favicon.ico", (req, res) => res.status(204).end());
 app.get("/", (req, res) => {
   res.json("app working");
 });
