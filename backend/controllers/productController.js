@@ -16,12 +16,12 @@ const addProduct = async (req, res) => {
 
     // Validate required fields
     if (!name || !price || !category) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         msg: "Name, price, and category are required.",
       });
     }
-    
+
     const image1 = req.files.image1 && req.files.image1[0];
     const image2 = req.files.image2 && req.files.image2[0];
     const image3 = req.files.image3 && req.files.image3[0];
@@ -33,12 +33,27 @@ const addProduct = async (req, res) => {
 
     let imageUrl = await Promise.all(
       images.map(async (item) => {
-        let result = await cloudinary.uploader.upload(item.path, {
-          resource_type: "image",
-        });
-        return result.secure_url;
+        try {
+          let result = await cloudinary.uploader.upload(item.path, {
+            resource_type: "image",
+          });
+          return result.secure_url;
+        } catch (error) {
+          console.error("Error uploading image to Cloudinary:", error.message);
+          throw new Error("Failed to upload image. Please try again.");
+        }
       })
     );
+
+    let parsedSizes = [];
+    try {
+      parsedSizes = JSON.parse(sizes);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        msg: "Invalid sizes format. Please provide a valid JSON array.",
+      });
+    }
 
     const productData = {
       name,
@@ -47,7 +62,7 @@ const addProduct = async (req, res) => {
       price: Number(price),
       subCategory,
       bestseller: bestseller === "true" || bestseller === true || false,
-      sizes: JSON.parse(sizes),
+      sizes: parsedSizes,
       image: imageUrl,
       date: Date.now(),
     };
@@ -55,9 +70,15 @@ const addProduct = async (req, res) => {
     const product = new productModel(productData);
     await product.save();
 
-    res.json({ success: true, message: "product Added" });
+    res.json({ success: true, message: "Product added successfully" });
   } catch (error) {
-    res.json({ success: false, msg: error.message });
+    console.error("Error adding product:", error.message);
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Failed to add product. Please try again later.",
+      });
   }
 };
 
@@ -67,17 +88,42 @@ const listProduct = async (req, res) => {
     const products = await productModel.find({});
     res.json({ success: true, products });
   } catch (error) {
-    res.json({ success: false, msg: error.message });
+    console.error("Error listing products:", error.message);
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Failed to fetch products. Please try again later.",
+      });
   }
 };
 
 // Remove Product
 const removeProduct = async (req, res) => {
   try {
-    await productModel.findByIdAndDelete(req.body.id);
-    res.json({ success: true, msg: "Product removed" });
+    const { id } = req.body;
+
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Product ID is required." });
+    }
+
+    const product = await productModel.findByIdAndDelete(id);
+
+    if (!product) {
+      return res.status(404).json({ success: false, msg: "Product not found" });
+    }
+
+    res.json({ success: true, msg: "Product removed successfully" });
   } catch (error) {
-    res.json({ success: false, msg: error.message });
+    console.error("Error removing product:", error.message);
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Failed to remove product. Please try again later.",
+      });
   }
 };
 
@@ -88,12 +134,18 @@ const singleProduct = async (req, res) => {
     const product = await productModel.findById(productId);
 
     if (!product) {
-      return res.json({ success: false, msg: "Product not found" });
+      return res.status(404).json({ success: false, msg: "Product not found" });
     }
 
     res.json({ success: true, product });
   } catch (error) {
-    res.json({ success: false, msg: error.message });
+    console.error("Error fetching product:", error.message);
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Failed to fetch product. Please try again later.",
+      });
   }
 };
 
