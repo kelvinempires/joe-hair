@@ -11,14 +11,27 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "server.js",
-      "methods": ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
-      "headers": {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, PATCH, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization"
-      }
+      "src": "/api/(.*)",
+      "dest": "server.js"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, DELETE, PUT, PATCH, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
     }
   ]
 }
