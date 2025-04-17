@@ -16,8 +16,16 @@ const PORT = process.env.PORT || 4000;
 // middleware
 
 app.use(express.json());
-app.use(cors());
-
+app.use(
+  cors({
+    origin: [
+      "https://joel-hair-empire.vercel.app",
+      "https://joel-admin.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ],
+  })
+);
 //api end point
 
 app.use("/api/user", userRouter);
