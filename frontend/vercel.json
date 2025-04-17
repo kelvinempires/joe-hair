@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://joe-empire-backend.vercel.app/api/$1"
-    },
-    {
       "source": "/(.*)",
       "destination": "/"
     }
