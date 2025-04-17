@@ -16,7 +16,9 @@ const PORT = process.env.PORT || 4000;
 // middleware
 
 app.use(express.json());
-app.use(cors({origin: 'https://foo.com'}));
+app.use(cors({origin: 'https://joel-admin.vercel.app',
+  credentials: true,
+}));
 
 //api end point
 
