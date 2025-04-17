@@ -13,9 +13,11 @@
     {
       "src": "/(.*)",
       "dest": "server.js",
-      "methods": ["GET", "DELETE", "PUT", "PATCH", "OPTIONS"],
+      "methods": ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
       "headers": {
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, DELETE, PUT, PATCH, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization"
       }
     }
   ]

@@ -16,7 +16,18 @@ const PORT = process.env.PORT || 4000;
 // middleware
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://joel-hair.vercel.app",
+      "https://joel-admin.vercel.app",
+      "http://localhost:5173",
+      "http://localhost:5174",
+    ],
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+    credentials: true,
+  })
+);
 
 //api end point
 
@@ -26,12 +37,25 @@ app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
 
 
+// Root route
 app.get("/", (req, res) => {
-  res.json("app working");
+  res.status(200).json({ message: "App is running successfully" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port http://localhost:${PORT}`);
-  connectMongoDB();
-  connectCloudinary()
-});
+
+
+const startServer = async () => {
+  try {
+    await connectMongoDB();
+    await connectCloudinary();
+    app.listen(PORT, () => {
+      console.log(`Server running at http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error("Server startup error:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
+
