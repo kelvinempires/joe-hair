@@ -19,13 +19,16 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "https://joel-hair-empire.vercel.app",
+      "https://joel-hair.vercel.app",
       "https://joel-admin.vercel.app",
       "http://localhost:5173",
       "http://localhost:5174",
     ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
+
 //api end point
 
 app.use("/api/user", userRouter);
