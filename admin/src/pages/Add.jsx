@@ -4,19 +4,28 @@ import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 
-const Add = ({token}) => {
+const Add = ({ token }) => {
   const [image1, setImage1] = useState(false);
   const [image2, setImage2] = useState(false);
   const [image3, setImage3] = useState(false);
   const [image4, setImage4] = useState(false);
 
-  const [name, setName] = useState("")
-  const [description, setDescription] = useState("")
-  const [category, setCategory] = useState("Men")
-  const [price, setPrice] = useState("")
-  const [subCategory, setSubCategory] = useState("Topwear")
-  const [sizes, setSizes] = useState([])
-  const [bestSeller, setBestSeller] = useState(false)
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState("Men");
+  const [price, setPrice] = useState("");
+  const [subCategory, setSubCategory] = useState("Topwear");
+  const [sizes, setSizes] = useState([]);
+  const [bestSeller, setBestSeller] = useState(false);
+  const [loading, setLoading] = useState(false); // State for loading spinner
+  const [pageLoading, setPageLoading] = useState(true); // State for skeleton loader
+
+  // Simulate page loading (for demonstration purposes)
+  React.useEffect(() => {
+    setTimeout(() => {
+      setPageLoading(false); // Stop skeleton loader after 2 seconds
+    }, 500);
+  }, []);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -24,6 +33,7 @@ const Add = ({token}) => {
       toast.error("Price must be greater than 0");
       return;
     }
+    setLoading(true); // Start loading spinner
     try {
       const formData = new FormData();
       formData.append("name", name);
@@ -39,9 +49,13 @@ const Add = ({token}) => {
       image3 && formData.append("image3", image3);
       image4 && formData.append("image4", image4);
 
-      // const response = await axios.post(`${backendUrl}/api/product/add`, formData, {headers: {Authorization: `Bearer ${token}`,},});
-
-      const response = await axios.post(backendUrl + "/api/product/add", formData, {headers:{token}})
+      const response = await axios.post(
+        backendUrl + "/api/product/add",
+        formData,
+        {
+          headers: { token },
+        }
+      );
 
       if (response.data.success) {
         toast.success(response.data.message);
@@ -60,11 +74,83 @@ const Add = ({token}) => {
     } catch (error) {
       console.error(error);
       toast.error(error.message);
+    } finally {
+      setLoading(false); // Stop loading spinner
     }
   };
 
+  if (pageLoading) {
+    // Render skeleton loader while the page is loading
+    return (
+      <div className="flex flex-col w-full items-start gap-4 animate-pulse">
+        {/* Skeleton for the image upload section */}
+        <div className="w-full">
+          <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
+          <div className="flex gap-2">
+            <div className="w-20 h-20 bg-gray-300 rounded"></div>
+            <div className="w-20 h-20 bg-gray-300 rounded"></div>
+            <div className="w-20 h-20 bg-gray-300 rounded"></div>
+            <div className="w-20 h-20 bg-gray-300 rounded"></div>
+          </div>
+        </div>
+
+        {/* Skeleton for the product name input */}
+        <div className="w-full">
+          <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
+          <div className="h-10 bg-gray-300 rounded w-full max-w-[500px]"></div>
+        </div>
+
+        {/* Skeleton for the product description */}
+        <div className="w-full">
+          <div className="h-5 bg-gray-300 rounded mb-2 w-48"></div>
+          <div className="h-20 bg-gray-300 rounded w-full max-w-[500px]"></div>
+        </div>
+
+        {/* Skeleton for the dropdowns */}
+        <div className="flex flex-col sm:flex-row gap-4 w-full sm:gap-8">
+          <div className="w-full">
+            <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
+            <div className="h-10 bg-gray-300 rounded w-full"></div>
+          </div>
+          <div className="w-full">
+            <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
+            <div className="h-10 bg-gray-300 rounded w-full"></div>
+          </div>
+          <div className="w-full">
+            <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
+            <div className="h-10 bg-gray-300 rounded w-full sm:w-[120px]"></div>
+          </div>
+        </div>
+
+        {/* Skeleton for the sizes */}
+        <div className="w-full">
+          <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
+          <div className="flex gap-3">
+            <div className="h-8 w-8 bg-gray-300 rounded"></div>
+            <div className="h-8 w-8 bg-gray-300 rounded"></div>
+            <div className="h-8 w-8 bg-gray-300 rounded"></div>
+            <div className="h-8 w-8 bg-gray-300 rounded"></div>
+            <div className="h-8 w-8 bg-gray-300 rounded"></div>
+          </div>
+        </div>
+
+        {/* Skeleton for the checkbox */}
+        <div className="flex gap-2 mt-2 items-center">
+          <div className="h-5 w-5 bg-gray-300 rounded"></div>
+          <div className="h-5 bg-gray-300 rounded w-32"></div>
+        </div>
+
+        {/* Skeleton for the button */}
+        <div className="w-28 h-10 bg-gray-300 rounded"></div>
+      </div>
+    );
+  }
+
   return (
-    <form onSubmit={onSubmitHandler} className="flex flex-col w-full items-start gap-3">
+    <form
+      onSubmit={onSubmitHandler}
+      className="flex flex-col w-full items-start gap-3"
+    >
       <div>
         <p className="mb-2">Upload Image</p>
         <div className="flex gap-2">
@@ -275,17 +361,25 @@ const Add = ({token}) => {
       </div>
       <div className="flex gap-2 mt-2">
         <input
-          onChange={() => setBestSeller(prev => !prev)}
+          onChange={() => setBestSeller((prev) => !prev)}
           checked={bestSeller}
           type="checkbox"
-          id="bestSeller"
+          id="bestseller"
         />
         <label className="cursor-pointer" htmlFor="bestSeller">
           Add to Best Seller
         </label>
       </div>
-      <button className="w-28 py-3 mt-4 bg-black text-white" type="submit">
-        Add
+      <button
+        className="w-28 py-3 mt-4 bg-black text-white flex justify-center items-center"
+        type="submit"
+        disabled={loading} // Disable button while loading
+      >
+        {loading ? (
+          <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full border-white border-t-transparent"></div>
+        ) : (
+          "Add"
+        )}
       </button>
     </form>
   );

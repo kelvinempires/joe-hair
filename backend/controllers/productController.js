@@ -61,7 +61,7 @@ const addProduct = async (req, res) => {
       category,
       price: Number(price),
       subCategory,
-      bestseller: bestseller === "true" || bestseller === true || false,
+      bestseller: bestseller === "true" || bestseller === true,
       sizes: parsedSizes,
       image: imageUrl,
       date: Date.now(),
@@ -73,12 +73,7 @@ const addProduct = async (req, res) => {
     res.json({ success: true, message: "Product added successfully" });
   } catch (error) {
     console.error("Error adding product:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        msg: "Failed to add product. Please try again later.",
-      });
+    res.status(500).json({ success: false, msg: "Failed to add product. Please try again later." });
   }
 };
 
@@ -89,12 +84,7 @@ const listProduct = async (req, res) => {
     res.json({ success: true, products });
   } catch (error) {
     console.error("Error listing products:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        msg: "Failed to fetch products. Please try again later.",
-      });
+    res.status(500).json({ success: false, msg: "Failed to fetch products. Please try again later." });
   }
 };
 
@@ -104,9 +94,7 @@ const removeProduct = async (req, res) => {
     const { id } = req.body;
 
     if (!id) {
-      return res
-        .status(400)
-        .json({ success: false, msg: "Product ID is required." });
+      return res.status(400).json({ success: false, msg: "Product ID is required." });
     }
 
     const product = await productModel.findByIdAndDelete(id);
@@ -118,12 +106,7 @@ const removeProduct = async (req, res) => {
     res.json({ success: true, msg: "Product removed successfully" });
   } catch (error) {
     console.error("Error removing product:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        msg: "Failed to remove product. Please try again later.",
-      });
+    res.status(500).json({ success: false, msg: "Failed to remove product. Please try again later." });
   }
 };
 
@@ -140,12 +123,7 @@ const singleProduct = async (req, res) => {
     res.json({ success: true, product });
   } catch (error) {
     console.error("Error fetching product:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        msg: "Failed to fetch product. Please try again later.",
-      });
+    res.status(500).json({ success: false, msg: "Failed to fetch product. Please try again later." });
   }
 };
 
