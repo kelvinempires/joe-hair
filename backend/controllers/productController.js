@@ -14,6 +14,8 @@ const addProduct = async (req, res) => {
       bestseller,
     } = req.body;
 
+    console.log("Bestseller received in request:", bestseller); // Debugging
+
     // Validate required fields
     if (!name || !price || !category) {
       return res.status(400).json({
@@ -61,7 +63,7 @@ const addProduct = async (req, res) => {
       category,
       price: Number(price),
       subCategory,
-      bestseller: bestseller === "true" || bestseller === true,
+      bestseller: bestseller === "true" || bestseller === true, // Convert to boolean
       sizes: parsedSizes,
       image: imageUrl,
       date: Date.now(),
@@ -73,7 +75,12 @@ const addProduct = async (req, res) => {
     res.json({ success: true, message: "Product added successfully" });
   } catch (error) {
     console.error("Error adding product:", error.message);
-    res.status(500).json({ success: false, msg: "Failed to add product. Please try again later." });
+    res
+      .status(500)
+      .json({
+        success: false,
+        msg: "Failed to add product. Please try again later.",
+      });
   }
 };
 
