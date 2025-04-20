@@ -1,16 +1,13 @@
-import p_img1 from './p_img1.png'
-import p_img2_1 from './p_img2_1.png'
+import p_img1 from './imag1.png'
+import p_img5 from './imag2.png'
+import p_img6 from './imag3.png'
 import p_img2_2 from './p_img2_2.png'
 import p_img2_3 from './p_img2_3.png'
-import p_img2_4 from './p_img2_4.png'
-import p_img3 from './p_img3.png'
 import p_img4 from './p_img4.png'
-import p_img5 from './p_img5.png'
-import p_img6 from './p_img6.png'
 import p_img7 from './p_img7.png'
 import p_img8 from './p_img8.png'
 import p_img9 from './p_img9.png'
-import p_img10 from './p_img10.png'
+import p_img01 from './imag01.png'
 import p_img11 from './p_img11.png'
 import p_img12 from './p_img12.png'
 import p_img13 from './p_img13.png'
@@ -75,25 +72,29 @@ import stripe_logo from './stripe_logo.png'
 import cross_icon from './cross_icon.png'
 
 export const assets = {
-    logo,
-    hero_img,
-    cart_icon,
-    dropdown_icon,
-    exchange_icon,
-    profile_icon,
-    quality_icon,
-    search_icon,
-    star_dull_icon,
-    star_icon,
-    bin_icon,
-    support_img,
-    menu_icon,
-    about_img,
-    contact_img,
-    razorpay_logo,
-    stripe_logo,
-    cross_icon
-}
+  logo,
+  hero_img,
+  cart_icon,
+  dropdown_icon,
+  exchange_icon,
+  profile_icon,
+  quality_icon,
+  search_icon,
+  star_dull_icon,
+  star_icon,
+  bin_icon,
+  support_img,
+  menu_icon,
+  about_img,
+  contact_img,
+  razorpay_logo,
+  stripe_logo,
+  cross_icon,
+  p_img1,
+  p_img5,
+  p_img6,
+  p_img01,
+};
 
 export const products = [
     {
@@ -113,7 +114,7 @@ export const products = [
         name: "Men Round Neck Pure Cotton T-shirt",
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 200,
-        image: [p_img2_1,p_img2_2,p_img2_3,p_img2_4],
+        image: [p_img2_2,p_img2_3],
         category: "Men",
         subCategory: "Topwear",
         sizes: ["M", "L", "XL"],
@@ -125,7 +126,7 @@ export const products = [
         name: "Girls Round Neck Cotton Top",
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 220,
-        image: [p_img3],
+        image: [p_img5],
         category: "Kids",
         subCategory: "Topwear",
         sizes: ["S", "L", "XL"],
@@ -209,7 +210,7 @@ export const products = [
         name: "Men Tapered Fit Flat-Front Trousers",
         description: "A lightweight, usually knitted, pullover shirt, close-fitting and with a round neckline and short sleeves, worn as an undershirt or outer garment.",
         price: 110,
-        image: [p_img10],
+        image: [p_img01],
         category: "Men",
         subCategory: "Bottomwear",
         sizes: ["S", "L", "XL"],

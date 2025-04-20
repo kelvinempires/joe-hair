@@ -176,17 +176,17 @@ const Collection = () => {
           </select>
         </div>
         {/* map products */}
-        <div className="grid grid-col md:grid-cols-3 lg:grid-cols-4 gap-x-2 gap-y-6">
-          {filteredProducts.map((item, index) => (
-            <ProductItem
-              key={index}
-              name={item.name}
-              id={item._id}
-              price={item.price}
-              image={item.image}
-            />
-          ))}
-        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 p-4 h-[600px] overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+  {filteredProducts.map((item, index) => (
+    <ProductItem
+      key={index}
+      name={item.name}
+      id={item._id}
+      price={item.price}
+      image={item.image}
+    />
+  ))}
+</div>
       </div>
     </div>
   );

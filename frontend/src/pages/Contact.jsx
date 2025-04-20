@@ -1,7 +1,8 @@
 import React from 'react'
 import Title from '../components/Title'
 import { assets } from '../assets/frontend_assets/assets'
-import NewsletterBox from '../components/NewsletterBox';
+import ContactDetails from '../components/ContactMap';
+import Newsletter from '../components/Newsletter';
 
 export const Contact = () => {
   return (
@@ -31,10 +32,13 @@ export const Contact = () => {
           <p className="text-gray-500">
             Learn more about our teams and job openings.
           </p>
-          <button className='border border-black px-8 py-4 text-sm hover:bg-black hover:text-white transition-all duration-500 '>Explore Jobs</button>
+          <button className="border border-black px-8 py-4 text-sm hover:bg-black hover:text-white transition-all duration-500 ">
+            Explore Jobs
+          </button>
         </div>
       </div>
-      <NewsletterBox/>
+      <ContactDetails />
+      <Newsletter/>
     </div>
   );
 }
