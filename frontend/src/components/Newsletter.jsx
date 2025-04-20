@@ -6,7 +6,7 @@ const Newsletter = () => {
     <section className="py-6 px-6 relative bg-[#b8b3b9]">
       {/* Background Image Only on Left Side */}
       <div
-        className="absolute top-0 left-32 w-sm h-full bg-cover bg-no-repeat bg-left"
+        className="absolute top-0 left-0 w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-[40%] h-full bg-cover bg-no-repeat bg-left"
         style={{ backgroundImage: `url(${assets.p_img01})` }}
       ></div>
 
@@ -31,10 +31,10 @@ const Newsletter = () => {
         <div className="flex w-full md:w-[40%] bg-white p-2 rounded-md shadow-lg">
           <input
             type="email"
-            placeholder="Enter your email"
-            className="w-full h-12 px-4 text-base border-none rounded-md outline-none bg-gray-100 focus:bg-white focus:ring-2 focus:ring-[#088] transition"
+            placeholder="your email"
+            className="w-full h-12 px-2 sm:px-4 text-base border-none rounded-md outline-none bg-gray-100 focus:bg-white focus:ring-2 focus:ring-[#ffdad6] transition"
           />
-          <button className="bg-black text-white text-base font-semibold px-6 h-12 rounded-md shadow-md hover:bg-[#06665c] transition duration-200">
+          <button className="bg-black text-white text-base font-semibold px-6 h-12 rounded-md shadow-md hover:bg-[#ffdad6] hover:text-black transition duration-200">
             Subscribe
           </button>
         </div>
