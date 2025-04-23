@@ -25,7 +25,7 @@ const Navbar = ({ setToken }) => {
 
   return (
     <div
-      className={`sticky top-0 z-50 flex items-center py-2 px-[4%] justify-between bg-white shadow-md transition-transform duration-300 border-b border-gray-300 ${
+      className={`sticky top-0 z-50 flex items-center px-[4%] justify-between shadow-md transition-transform duration-300 border-b border-gray-300 ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >

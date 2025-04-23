@@ -14,7 +14,7 @@ const Newsletter = () => {
         {/* Text Section */}
         <div className="md:w-1/2 text-gray-900 text-center md:text-left">
           <h4 className="prata-regular text-2xl  lg:text-3xl leading-relaxed">
-            Sign Up for Our Newsletter
+            SignUp for Our Newsletter
           </h4>
           <p className="text-lg font-medium text-gray-700">
             Get email updates about our latest shop and

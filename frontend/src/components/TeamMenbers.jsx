@@ -50,7 +50,7 @@ const TeamMembers = () => {
               </p>
               <p className="text-sm text-gray-600">{member.role}</p>
               <p className="text-sm text-gray-600">
-                📞{" "}
+                📞
                 <a
                   href={`tel:${member.phone}`}
                   className="text-blue-500 hover:underline"
@@ -59,7 +59,7 @@ const TeamMembers = () => {
                 </a>
               </p>
               <p className="text-sm text-gray-600">
-                ✉️{" "}
+                ✉️
                 <a
                   href={`mailto:${member.email}`}
                   className="text-blue-500 hover:underline"
