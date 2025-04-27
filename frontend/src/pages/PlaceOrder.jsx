@@ -7,7 +7,7 @@ import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
-  const [method, setMethod] = useState("cod");
+  const [method, setMethod] = useState("paystack");
   const {
     navigate,
     backendUrl,
@@ -35,61 +35,89 @@ const PlaceOrder = () => {
     setFormData((data) => ({ ...data, [name]: value }));
   };
 
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
-    try {
-      let orderItems = [];
-      for (const items in cartItems) {
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
-            const itemInfo = structuredClone(
-              products.find((product) => product._id === items)
-            );
-            if (itemInfo) {
-              itemInfo.size = item;
-              itemInfo.quantity = cartItems[items][item];
-              orderItems.push(itemInfo);
-            }
-          }
-        }
-      }
-      let orderData = {
-        address: formData,
-        items: orderItems,
-        amount: getCartAmount() + delivery_fee,
-      }
-      switch (method) {
-        //api call for cash on delivery COD
-        case "cod": {
-          const response = await axios.post(backendUrl + "/api/order/place", orderData, { headers: { token } });
-          if (response.data.success) {
-            setCartItems({});
-            toast.success(response.data.message);
-            navigate("/orders");
-          } else {
-            toast.error(response.data.message);
-          }
-          break;
-        }
+ const onSubmitHandler = async (e) => {
+   e.preventDefault();
+   try {
+     let orderItems = [];
+     for (const items in cartItems) {
+       for (const item in cartItems[items]) {
+         if (cartItems[items][item] > 0) {
+           const itemInfo = structuredClone(
+             products.find((product) => product._id === items)
+           );
+           if (itemInfo) {
+             itemInfo.size = item;
+             itemInfo.quantity = cartItems[items][item];
+             orderItems.push(itemInfo);
+           }
+         }
+       }
+     }
 
-        case "stripe": {
-          const responseStripe = await axios.post(backendUrl + "/api/order/stripe", orderData, { headers: { token } });
-          if (responseStripe.data.success) {
-            const {session_url} = responseStripe.data;
-            window.location.replace(session_url);
-          } else {
-            toast.error(responseStripe.data.message);
-          }
-          break;
-        }
+     let orderData = {
+       address: formData,
+       items: orderItems,
+       amount: getCartAmount() + delivery_fee,
+     };
 
-        default:
-          break;
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response?.data?.message || "Failed to place order.");}
-  };
+     switch (method) {
+       // API call for Cash on Delivery (COD)
+       case "cod": {
+         const response = await axios.post(
+           backendUrl + "/api/order/place",
+           orderData,
+           { headers: { token } }
+         );
+         if (response.data.success) {
+           setCartItems({});
+           toast.success(response.data.message);
+           navigate("/orders");
+         } else {
+           toast.error(response.data.message);
+         }
+         break;
+       }
+
+       // Stripe payment processing
+       case "stripe": {
+         const responseStripe = await axios.post(
+           backendUrl + "/api/order/stripe",
+           orderData,
+           { headers: { token } }
+         );
+         if (responseStripe.data.success) {
+           const { session_url } = responseStripe.data;
+           window.location.replace(session_url);
+         } else {
+           toast.error(responseStripe.data.message);
+         }
+         break;
+       }
+
+       // Paystack payment processing
+       case "paystack": {
+         const responsePaystack = await axios.post(
+           backendUrl + "/api/order/paystack",
+           orderData,
+           { headers: { token } }
+         );
+         if (responsePaystack.data.success) {
+           const { authorization_url } = responsePaystack.data;
+           window.location.replace(authorization_url); // Redirect to Paystack payment page
+         } else {
+           toast.error(responsePaystack.data.message);
+         }
+         break;
+       }
+
+       default:
+         break;
+     }
+   } catch (error) {
+     console.log(error);
+     toast.error(error.response?.data?.message || "Failed to place order.");
+   }
+ };
 
   return (
     <form
@@ -197,9 +225,10 @@ const PlaceOrder = () => {
           <Title test1={"PAYMENT"} test2={"METHOD"} />
           {/* ---------text payment selection-------- */}
           <div className="flex gap-3 flex-col lg:flex-row">
+            {/* Stripe Payment Option */}
             <div
               onClick={() => setMethod("stripe")}
-              className=" flex items-center gap-0 border border-gray-300 lg:border-0 px-3 cursor-pointer"
+              className="flex items-center gap-0 border border-gray-300 lg:border-0 px-3 cursor-pointer"
             >
               <p
                 className={`min-w-3.5 h-3.5 border border-gray-300 rounded-full  ${
@@ -209,12 +238,14 @@ const PlaceOrder = () => {
               <img
                 src={assets.stripe_logo}
                 className="h-5 mx-4"
-                alt="strip logo"
+                alt="stripe logo"
               />
             </div>
-            <div
+
+            {/* Razorpay Payment Option */}
+            {/* <div
               onClick={() => setMethod("razorpay")}
-              className=" flex items-center gap-0 border border-gray-300 lg:border-0 p-2 px-3 cursor-pointer"
+              className="flex items-center gap-0 border border-gray-300 lg:border-0 p-2 px-3 cursor-pointer"
             >
               <p
                 className={`min-w-3.5 h-3.5 border border-gray-300 rounded-full  ${
@@ -224,21 +255,38 @@ const PlaceOrder = () => {
               <img
                 src={assets.razorpay_logo}
                 className="h-5 mx-4"
-                alt="razorpay_logo "
+                alt="razorpay_logo"
               />
-            </div>
+            </div> */}
+
+            {/* Cash on Delivery Option */}
             <div
               onClick={() => setMethod("cod")}
-              className=" flex items-center gap-0  border border-gray-300 lg:border-0 p-2 px-3 cursor-pointer"
+              className="flex items-center gap-0 border border-gray-300 lg:border-0 p-2 px-3 cursor-pointer"
             >
               <p
-                className={`min-w-3.5 h-3.5 border border-gray-300  rounded-full ${
+                className={`min-w-3.5 h-3.5 border border-gray-300 rounded-full ${
                   method === "cod" ? "bg-green-400" : ""
                 } `}
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">
-                CASH ON DELIVERY
+                COD
               </p>
+            </div>
+
+            {/* Paystack Payment Option */}
+            <div
+              onClick={() => setMethod("paystack")}
+              className="flex items-center gap-0 border border-gray-300 lg:border-0 p-2 px-3 cursor-pointer"
+            >
+              <p
+                className={`min-w-3.5 h-3.5 border border-gray-300 rounded-full ${
+                  method === "paystack" ? "bg-green-400" : ""
+                } `}
+              ></p>
+              <h2 className="text-green-500 text-md font-semibold mx-4">
+                Nigeria Payment
+              </h2>
             </div>
           </div>
           <div className=" w-fit text-end mt-8 lg:ml-40">

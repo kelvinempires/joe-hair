@@ -13,17 +13,13 @@ const Newsletter = () => {
       <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 relative">
         {/* Text Section */}
         <div className="md:w-1/2 text-gray-900 text-center md:text-left">
-          <h4 className="prata-regular text-2xl  lg:text-3xl leading-relaxed">
-            SignUp for Our Newsletter
-          </h4>
+          <h4 className="prata-regular text-2xl  lg:text-3xl leading-relaxed">SignUp for Our Newsletter</h4>
           <p className="text-lg font-medium text-gray-700">
             Get email updates about our latest shop and
-            <div className="flex items-center gap-2">
-              <p className="w-8 md:w-11 h-[2px] bg-[#414141]"></p>
-              <p className="font-medium text-black text-sm md:text-base">
-                special offers.
-              </p>
-            </div>
+          </p>
+          <div className="w-8 md:w-11 h-[2px] bg-[#414141]"></div>
+          <p className="font-medium text-black text-sm md:text-base">
+            special offers.
           </p>
         </div>
 
