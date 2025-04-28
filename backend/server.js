@@ -7,7 +7,10 @@ import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
 import cardRouter from "./routes/cardRoute.js";
 import orderRouter from "./routes/orderRoute.js";
+import paystackWebhookHandler from "./paystackWebhook.js";
+import bodyParser from "body-parser";
 
+// Use the webhook in the backend
 
 //app config
 const app = express();
@@ -16,31 +19,29 @@ const PORT = process.env.PORT || 4000;
 // middleware
 
 app.use(express.json());
-app.use(cors());
 
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       const allowedOrigins = [
-//         "https://joel-hair.vercel.app",
-//         "https://joel-admin.vercel.app",
-//         "http://localhost:3000",
-//         "http://localhost:5173",
-//         "http://localhost:5174",
-//       ];
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     credentials: true, // Allow cookies or authentication headers
-//   })
-// );
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "https://joel-hair.vercel.app",
+        "https://joel-admin.vercel.app",
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost:5174",
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true, // Allow cookies or authentication headers
+  })
+);
 
 // Debugging middleware
-
 app.use((req, res, next) => {
   console.log(`Incoming request: ${req.method} ${req.url}`);
   console.log(`Origin: ${req.headers.origin}`);
@@ -54,13 +55,23 @@ app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
-
+// Use raw middleware for Paystack webhook
+app.use(
+  "/api/paystack-webhook",
+  bodyParser.raw({ type: "application/json" }),
+  paystackWebhookHandler
+);
 
 // Root route
 app.get("/", (req, res) => {
   res.status(200).json({ message: "App is running successfully" });
 });
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ success: false, message: "Internal server error." });
+});
 
 
 const startServer = async () => {

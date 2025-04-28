@@ -12,9 +12,9 @@ import Login from "./pages/Login";
 import { Contact } from "./pages/Contact";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
-import { ToastContainer,} from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import VerifyPayment from "./pages/VerifyPayment";
-
+import NotFound from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -33,6 +33,7 @@ function App() {
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/verify" element={<VerifyPayment />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
     </div>
@@ -40,4 +41,3 @@ function App() {
 }
 
 export default App;
-
