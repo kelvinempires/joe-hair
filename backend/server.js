@@ -56,11 +56,11 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
 // Use raw middleware for Paystack webhook
-app.use(
-  "/api/paystack-webhook",
-  bodyParser.raw({ type: "application/json" }),
-  paystackWebhookHandler
-);
+// app.use(
+//   "/api/paystack-webhook",
+//   bodyParser.raw({ type: "application/json" }),
+//   paystackWebhookHandler
+// );
 
 // Root route
 app.get("/", (req, res) => {

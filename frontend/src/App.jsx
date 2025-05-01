@@ -15,6 +15,10 @@ import SearchBar from "./components/SearchBar";
 import { ToastContainer } from "react-toastify";
 import VerifyPayment from "./pages/VerifyPayment";
 import NotFound from "./pages/NotFoundPage";
+import PrivacyPolicy from "./pages/PrivacyAndPolicy";
+import TermsAndConditions from "./pages/TeamsAndCondition";
+import FAQ from "./pages/FAQ";
+import Help from "./pages/Help";
 
 function App() {
   return (
@@ -33,6 +37,13 @@ function App() {
         <Route path="/place-order" element={<PlaceOrder />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/verify" element={<VerifyPayment />} />
+        <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/help" element={<Help />} />
+
+        {/* Help Center */}
+        <Route path="/faq" element={<FAQ />} />
+
         <Route path="*" element={<NotFound />} />
       </Routes>
       <Footer />
