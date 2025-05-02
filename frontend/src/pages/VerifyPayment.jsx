@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 export const VerifyPayment = () => {
   const { navigate, token, setCartItems, backendUrl } = useContext(ShopContext);
   const [searchParams] = useSearchParams();
+  const [loading, setLoading] = useState(true);
 
   const success = searchParams.get("success");
   const orderId = searchParams.get("orderId");
@@ -14,8 +15,16 @@ export const VerifyPayment = () => {
 
   const verifyPayment = async () => {
     try {
+      if (!success || !orderId) {
+        toast.error("Invalid payment verification request.");
+        navigate("/cart");
+        return;
+      }
+
       if (!token) {
-        return null;
+        toast.error("You need to log in to verify your payment.");
+        navigate("/login");
+        return;
       }
 
       let verificationUrl = "";
@@ -43,9 +52,14 @@ export const VerifyPayment = () => {
         navigate("/cart");
       }
     } catch (error) {
-      console.error("Error verifying payment:", error);
+      console.error(
+        "Error verifying payment:",
+        error.response?.data || error.message
+      );
       toast.error("Error verifying payment. Please try again.");
       navigate("/cart");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,7 +67,9 @@ export const VerifyPayment = () => {
     verifyPayment();
   }, [token]);
 
-  return <div>Verifying payment...</div>;
+  return (
+    <div>{loading ? <p>Verifying payment...</p> : <p>Redirecting...</p>}</div>
+  );
 };
 
 export default VerifyPayment;

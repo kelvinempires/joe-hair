@@ -200,7 +200,10 @@ const placeOrderPaystack = async (req, res) => {
     const { userId, items, amount, address } = req.body;
     const email = address?.email; // Extract email from the address object
     const { origin } = req.headers;
-    const baseUrl = origin || process.env.FRONTEND_URL;
+    const adminOrigin = process.env.ADMIN_FRONTEND_URL;
+    const baseUrl = origin === adminOrigin ? process.env.FRONTEND_URL : origin || process.env.FRONTEND_URL;
+
+    // const baseUrl = origin || process.env.FRONTEND_URL;
 
     console.log("Request Body:", req.body); // Debugging
     console.log("Email received:", email); // Debugging
