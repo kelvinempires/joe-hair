@@ -119,43 +119,35 @@ const verifyStripe = async (req, res) => {
       });
   }
 };
-
-
 const placeOrderPaystack = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
-    const email = address?.email; // Extract email from the address object
+    const email = address?.email;
     const { origin } = req.headers;
     const adminOrigin = process.env.ADMIN_FRONTEND_URL;
-    const baseUrl = origin === adminOrigin ? process.env.FRONTEND_URL : origin || process.env.FRONTEND_URL;
+    const baseUrl =
+      origin === adminOrigin
+        ? process.env.FRONTEND_URL
+        : origin || process.env.FRONTEND_URL;
 
-    // const baseUrl = origin || process.env.FRONTEND_URL;
-
-    console.log("Request Body:", req.body); // Debugging
-    console.log("Email received:", email); // Debugging
-
-    // Validate email
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    // Validate required fields
+    if (
+      !userId ||
+      !items ||
+      !amount ||
+      !address ||
+      !email ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
       return res.status(400).json({
         success: false,
-        message: "A valid email address is required.",
+        message:
+          "Invalid request: Please provide valid user details, items, amount, and email.",
       });
     }
-    const reference = uuidv4();
-    console.log("Generated reference:", reference); // Debugging log
-    const orderData = {
-      userId,
-      items,
-      address,
-      amount,
-      paymentMethod: "Paystack",
-      payment: false,
-      date: Date.now(),
-      reference, // Save the generated reference
-    };
 
-    const newOrder = new orderModel(orderData);
-    await newOrder.save();
+    const reference = uuidv4();
+    console.log("Generated reference:", reference);
 
     // Initialize Paystack Transaction
     const response = await axios.post(
@@ -164,9 +156,9 @@ const placeOrderPaystack = async (req, res) => {
         email,
         amount: amount * 100, // Convert amount to kobo
         currency: "NGN",
-        callback_url: `${baseUrl}/verify?success=true&orderId=${newOrder._id}`,
+        callback_url: `${baseUrl}/verify?success=true&orderId=${reference}`,
         metadata: {
-          orderId: newOrder._id,
+          orderId: reference,
           custom_fields: [{ display_name: "Delivery Address", value: address }],
         },
       },
@@ -178,11 +170,27 @@ const placeOrderPaystack = async (req, res) => {
       }
     );
 
-    console.log("Paystack response:", response.data);
-
     if (!response.data.status) {
-      throw new Error(response.data.message || "Paystack transaction failed.");
+      return res.status(500).json({
+        success: false,
+        message: response.data.message || "Paystack transaction failed.",
+      });
     }
+
+    // Save order only after successful Paystack response
+    const orderData = {
+      userId,
+      items,
+      address,
+      amount,
+      paymentMethod: "Paystack",
+      payment: false,
+      date: Date.now(),
+      reference,
+    };
+
+    const newOrder = new orderModel(orderData);
+    await newOrder.save();
 
     res.json({
       success: true,
@@ -192,10 +200,89 @@ const placeOrderPaystack = async (req, res) => {
     console.error("Error placing Paystack order:", error.message);
     res.status(500).json({
       success: false,
-      message: "Failed to place order. Please try again later.",
+      message: "Failed to process your order. Please try again later.",
+      errorDetails: error.message,
     });
   }
 };
+
+export default placeOrderPaystack;
+
+// const placeOrderPaystack = async (req, res) => {
+//   try {
+//     const { userId, items, amount, address } = req.body;
+//     const email = address?.email; // Extract email from the address object
+//     const { origin } = req.headers;
+//     const adminOrigin = process.env.ADMIN_FRONTEND_URL;
+//     const baseUrl = origin === adminOrigin ? process.env.FRONTEND_URL : origin || process.env.FRONTEND_URL;
+
+//     // const baseUrl = origin || process.env.FRONTEND_URL;
+
+//     console.log("Request Body:", req.body); // Debugging
+//     console.log("Email received:", email); // Debugging
+
+//     // Validate email
+//     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "A valid email address is required.",
+//       });
+//     }
+//     const reference = uuidv4();
+//     console.log("Generated reference:", reference); // Debugging log
+//     const orderData = {
+//       userId,
+//       items,
+//       address,
+//       amount,
+//       paymentMethod: "Paystack",
+//       payment: false,
+//       date: Date.now(),
+//       reference, // Save the generated reference
+//     };
+
+//     const newOrder = new orderModel(orderData);
+//     await newOrder.save();
+
+//     // Initialize Paystack Transaction
+//     const response = await axios.post(
+//       "https://api.paystack.co/transaction/initialize",
+//       {
+//         email,
+//         amount: amount * 100, // Convert amount to kobo
+//         currency: "NGN",
+//         callback_url: `${baseUrl}/verify?success=true&orderId=${newOrder._id}`,
+//         metadata: {
+//           orderId: newOrder._id,
+//           custom_fields: [{ display_name: "Delivery Address", value: address }],
+//         },
+//       },
+//       {
+//         headers: {
+//           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+
+//     console.log("Paystack response:", response.data);
+
+//     if (!response.data.status) {
+//       throw new Error(response.data.message || "Paystack transaction failed.");
+//     }
+
+//     res.json({
+//       success: true,
+//       authorization_url: response.data.data.authorization_url,
+//     });
+//   } catch (error) {
+//     console.error("Error placing Paystack order:", error.message);
+//     res.status(500).json({
+//       success: false,
+//       message: "Failed to place order. Please try again later.",
+//     });
+//   }
+// };
 
 const verifyPaystack = async (req, res) => {
   const { reference, orderId, userId } = req.body;
