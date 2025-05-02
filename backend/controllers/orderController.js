@@ -120,80 +120,6 @@ const verifyStripe = async (req, res) => {
   }
 };
 
-// const placeOrderPaystack = async (req, res) => {
-//   try {
-//     const { userId, items, amount, address } = req.body;
-//     const email = address?.email;
-
-//     // Validate email
-//     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-//       return res.status(400).json({
-//         success: false,
-//         message: "A valid email address is required.",
-//       });
-//     }
-
-//     // Generate a unique reference for the order
-//     const reference = uuidv4();
-//     console.log("Generated reference:", reference); // Debugging log
-
-//     // Include the reference in the order data
-//     const orderData = {
-//       userId,
-//       items,
-//       address,
-//       amount,
-//       paymentMethod: "Paystack",
-//       payment: false,
-//       date: Date.now(),
-//       reference, // Save the generated reference
-//     };
-
-//     console.log("Order data being saved:", orderData); // Debugging log
-
-//     const newOrder = new orderModel(orderData);
-//     await newOrder.save();
-//     console.log("Order saved successfully:", newOrder);
-
-//     // Initialize Paystack Transaction
-//     const response = await axios.post(
-//       "https://api.paystack.co/transaction/initialize",
-//       {
-//         email,
-//         amount: amount * 100, // Convert amount to kobo
-//         currency: "NGN",
-//         callback_url: `${baseUrl}/payment-success?status=success&reference=${reference}&orderId=${newOrder._id}`,
-//         metadata: {
-//           orderId: newOrder._id,
-//           custom_fields: [{ display_name: "Delivery Address", value: address }],
-//         },
-//       },
-//       {
-//         headers: {
-//           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-
-//     console.log("Paystack response:", response.data);
-
-//     if (!response.data.status) {
-//       throw new Error(response.data.message || "Paystack transaction failed.");
-//     }
-
-//     res.json({
-//       success: true,
-//       authorization_url: response.data.data.authorization_url,
-//     });
-//   } catch (error) {
-//     console.error("Error placing Paystack order:", error.message);
-//     res.status(500).json({
-//       success: false,
-//       message: "Failed to place order. Please try again later.",
-//     });
-//   }
-// };
 
 const placeOrderPaystack = async (req, res) => {
   try {
@@ -270,65 +196,6 @@ const placeOrderPaystack = async (req, res) => {
     });
   }
 };
-// const verifyPaystack = async (req, res) => {
-//   const { reference, orderId, userId } = req.body;
-//   try {
-//     console.log("Reference received in verifyPaystack:", reference); // Debugging log
-
-//     // Debugging: Check if the reference exists in the database
-//     const debugOrder = await orderModel.findOne({ reference });
-//     console.log("Debugging: Order found in database:", debugOrder);
-
-//      if (!debugOrder) {
-//        console.error("Debugging: Reference not found in database:", reference);
-//        return res.status(404).json({
-//          success: false,
-//          message: "Order not found for the provided reference.",
-//        });
-//      }
-
-//     const response = await axios.get(
-//       `https://api.paystack.co/transaction/verify/${reference}`,
-//       {
-//         headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` },
-//       }
-//     );
-
-//     console.log("Paystack verification response:", response.data);
-
-//     if (response.data.data.status === "success") {
-//       const order = await orderModel.findOne({ reference });
-//       if (!order) {
-//         return res.status(404).json({
-//           success: false,
-//           message: "Order not found for the provided reference.",
-//         });
-//       }
-
-//       await orderModel.findByIdAndUpdate(orderId, { payment: true });
-//       await UserModel.findByIdAndUpdate(userId, { cartData: {} });
-
-//       res.json({ success: true, message: "Order placed successfully" });
-//     } else {
-//       await orderModel.findByIdAndDelete(orderId);
-//       res.json({ success: false, message: "Payment failed" });
-//     }
-//   } catch (error) {
-//     if (error.response && error.response.status === 404) {
-//       console.error("Transaction not found:", error.response.data);
-//       return res.status(404).json({
-//         success: false,
-//         message: "Transaction not found. Please check the reference.",
-//       });
-//     }
-
-//     console.error("Error verifying Paystack payment:", error.message);
-//     res.status(500).json({
-//       success: false,
-//       message: "Failed to verify payment. Please try again later.",
-//     });
-//   }
-// };
 
 const verifyPaystack = async (req, res) => {
   const { reference, orderId, userId } = req.body;
@@ -418,17 +285,7 @@ const updateStatus = async (req, res) => {
   }
 };
 
-export {
-  placeOrder,
-  placeOrderStripe,
-  allOrders,
-  userOrders,
-  updateStatus,
-  verifyStripe,
-  placeOrderRazorpay,
-  placeOrderPaystack,
-  verifyPaystack,
-};
+
 const placeOrderRazorpay = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
@@ -455,4 +312,14 @@ const placeOrderRazorpay = async (req, res) => {
       });
   }
 };
-
+export {
+  placeOrder,
+  placeOrderStripe,
+  allOrders,
+  userOrders,
+  updateStatus,
+  verifyStripe,
+  placeOrderRazorpay,
+  placeOrderPaystack,
+  verifyPaystack,
+};
