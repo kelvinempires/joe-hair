@@ -10,7 +10,7 @@ export const Contact = () => {
       <div className="text-center text-2xl pt-10 border-t border-gray-300">
         <Title test1={"CONTACT"} test2={"US"} />
       </div>
-      <div className="my-10 flex flex-col justify-center md:flex-row gap-10 mb-28">
+      <div className="my-10 flex flex-col md:flex-row gap-20 mb-16">
         <img
           className="w-full max-w-[480px]"
           src={assets.contact_img}
@@ -37,8 +37,13 @@ export const Contact = () => {
           </button>
         </div>
       </div>
-      <ContactDetails />
-      <Newsletter/>
+      <div className="text-xl pb-4">
+        <Title test1={"OUR"} test2={"LIVE LOCATION"} />
+      </div>{" "}
+      <div className="mb-16">
+        <ContactDetails />
+      </div>
+      <Newsletter />
     </div>
   );
 }

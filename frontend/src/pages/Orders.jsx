@@ -71,7 +71,7 @@ const Orders = () => {
                   <p>Size: {item.size}</p>
                 </div>
                 <p className="mt-1">
-                  Date:
+                  Date:{" "}
                   <span className="text-gray-400">
                     {new Date(item.date).toDateString()}{" "}
                   </span>

@@ -4,7 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-export const VerifyPayment = () => {
+const VerifyPayment = () => {
   const { navigate, token, setCartItems, backendUrl } = useContext(ShopContext);
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -15,7 +15,7 @@ export const VerifyPayment = () => {
 
   const verifyPayment = async () => {
     try {
-      if (!success || !orderId) {
+      if (!success || !orderId || (reference && reference.trim() === "")) {
         toast.error("Invalid payment verification request.");
         navigate("/cart");
         return;
@@ -56,7 +56,10 @@ export const VerifyPayment = () => {
         "Error verifying payment:",
         error.response?.data || error.message
       );
-      toast.error("Error verifying payment. Please try again.");
+      toast.error(
+        error.response?.data?.message ||
+          "Error verifying payment. Please try again."
+      );
       navigate("/cart");
     } finally {
       setLoading(false);
@@ -64,12 +67,23 @@ export const VerifyPayment = () => {
   };
 
   useEffect(() => {
-    verifyPayment();
+    if (token) {
+      verifyPayment();
+    }
   }, [token]);
 
-  return (
-    <div>{loading ? <p>Verifying payment...</p> : <p>Redirecting...</p>}</div>
-  );
+return (
+  <div className="flex items-center justify-center h-screen text-center text-lg font-bold">
+    {loading ? (
+      <div className="flex flex-col items-center">
+        <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-blue-500 mt-3 animate-pulse">Verifying payment...</p>
+      </div>
+    ) : (
+      <p className="text-green-500 animate-fade-in">Redirecting...</p>
+    )}
+  </div>
+);
 };
 
 export default VerifyPayment;

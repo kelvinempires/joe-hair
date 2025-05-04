@@ -57,7 +57,7 @@ const FAQ = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-8 bg-gradient-to-b from-gray-100 to-gray-300 shadow-lg rounded-lg">
-      <h1 className="text-4xl font-extrabold text-gray-800 mb-6 text-center">
+      <h1 className="prata-regular text-4xl font-extrabold text-gray-800 mb-6 text-center">
         Frequently Asked Questions
       </h1>
       {faqs.map((faq, index) => (
@@ -66,7 +66,7 @@ const FAQ = () => {
           className="bg-white p-6 rounded-lg shadow-md mb-4 transition-transform duration-300 transform hover:scale-105 cursor-pointer"
           onClick={() => toggleFAQ(index)}
         >
-          <h2 className="text-xl font-semibold text-gray-700 flex justify-between items-center">
+          <h2 className="font-semibold text-sm md:text-base flex justify-between items-center">
             {faq.question}
             <span className="text-gray-500">
               {openIndex === index ? "▲" : "▼"}

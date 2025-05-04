@@ -119,10 +119,12 @@ const verifyStripe = async (req, res) => {
       });
   }
 };
+
 const placeOrderPaystack = async (req, res) => {
   try {
+    // Extract necessary data from request body
     const { userId, items, amount, address } = req.body;
-    const email = address?.email;
+    const email = address?.email; // Extract email from the address object
     const { origin } = req.headers;
     const adminOrigin = process.env.ADMIN_FRONTEND_URL;
     const baseUrl =
@@ -130,54 +132,30 @@ const placeOrderPaystack = async (req, res) => {
         ? process.env.FRONTEND_URL
         : origin || process.env.FRONTEND_URL;
 
-    // Validate required fields
-    if (
-      !userId ||
-      !items ||
-      !amount ||
-      !address ||
-      !email ||
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-    ) {
+    console.log("Request Body:", req.body); // Debugging
+    console.log("Email received:", email); // Debugging
+
+    // Validate email
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return res.status(400).json({
         success: false,
-        message:
-          "Invalid request: Please provide valid user details, items, amount, and email.",
+        message: "A valid email address is required.",
       });
     }
 
-    const reference = uuidv4();
-    console.log("Generated reference:", reference);
-
-    // Initialize Paystack Transaction
-    const response = await axios.post(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        email,
-        amount: amount * 100, // Convert amount to kobo
-        currency: "NGN",
-        callback_url: `${baseUrl}/verify?success=true&orderId=${reference}`,
-        metadata: {
-          orderId: reference,
-          custom_fields: [{ display_name: "Delivery Address", value: address }],
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.data.status) {
-      return res.status(500).json({
+    // Validate amount
+    if (!amount || isNaN(amount) || amount <= 0) {
+      return res.status(400).json({
         success: false,
-        message: response.data.message || "Paystack transaction failed.",
+        message: "Invalid transaction amount.",
       });
     }
 
-    // Save order only after successful Paystack response
+    // Generate a unique transaction reference
+    const reference = uuidv4();
+    console.log("Generated reference:", reference); // Debugging log
+
+    // Create order object
     const orderData = {
       userId,
       items,
@@ -186,27 +164,80 @@ const placeOrderPaystack = async (req, res) => {
       paymentMethod: "Paystack",
       payment: false,
       date: Date.now(),
-      reference,
+      reference, // Save the generated reference
     };
 
     const newOrder = new orderModel(orderData);
     await newOrder.save();
+
+    // Ensure required environment variables are set
+    const paystackSecret = process.env.PAYSTACK_SECRET_KEY;
+    const subaccountMain = process.env.YOUR_SUBACCOUNT_CODE;
+    const subaccountVendor = process.env.VENDOR_SUBACCOUNT_CODE;
+
+    if (!paystackSecret || !subaccountMain || !subaccountVendor) {
+      return res.status(500).json({
+        success: false,
+        message: "Missing Paystack configuration.",
+      });
+    }
+
+    // Initialize Paystack Transaction
+    const response = await axios.post(
+      "https://api.paystack.co/transaction/initialize",
+      {
+        email,
+        amount: amount * 100, // Convert amount to kobo
+        currency: "NGN",
+        callback_url: `${baseUrl}/verify?success=true&orderId=${newOrder._id}`,
+        metadata: {
+          orderId: newOrder._id,
+          custom_fields: [{ display_name: "Delivery Address", value: address }],
+        },
+        split: {
+          type: "percentage",
+          subaccounts: [
+            {
+              subaccount: subaccountMain,
+              share: 5,
+            },
+            {
+              subaccount: subaccountVendor,
+              share: 95,
+            },
+          ],
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${paystackSecret}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    console.log("Paystack response:", response.data);
+
+    if (
+      !response.data ||
+      !response.data.status ||
+      !response.data.data.authorization_url
+    ) {
+      throw new Error(response.data.message || "Paystack transaction failed.");
+    }
 
     res.json({
       success: true,
       authorization_url: response.data.data.authorization_url,
     });
   } catch (error) {
-    console.error("Error placing Paystack order:", error.message);
+    console.error("Error placing Paystack order:", error);
     res.status(500).json({
       success: false,
-      message: "Failed to process your order. Please try again later.",
-      errorDetails: error.message,
+      message: "Failed to place order. Please try again later.",
     });
   }
 };
-
-export default placeOrderPaystack;
 
 // const placeOrderPaystack = async (req, res) => {
 //   try {
@@ -228,8 +259,19 @@ export default placeOrderPaystack;
 //         message: "A valid email address is required.",
 //       });
 //     }
+//     // Validate amount
+//      if (!amount || isNaN(amount) || amount <= 0) {
+//        return res.status(400).json({
+//          success: false,
+//          message: "Invalid transaction amount.",
+//        });
+//      }
+
+//     // Generate a unique reference
 //     const reference = uuidv4();
 //     console.log("Generated reference:", reference); // Debugging log
+    
+//     // Prepare order data
 //     const orderData = {
 //       userId,
 //       items,
@@ -244,6 +286,8 @@ export default placeOrderPaystack;
 //     const newOrder = new orderModel(orderData);
 //     await newOrder.save();
 
+    
+
 //     // Initialize Paystack Transaction
 //     const response = await axios.post(
 //       "https://api.paystack.co/transaction/initialize",
@@ -255,6 +299,19 @@ export default placeOrderPaystack;
 //         metadata: {
 //           orderId: newOrder._id,
 //           custom_fields: [{ display_name: "Delivery Address", value: address }],
+//         },
+//         split: {
+//           type: "percentage",
+//           subaccounts: [
+//             {
+//               subaccount: process.env.YOUR_SUBACCOUNT_CODE,
+//               share: 5,
+//             },
+//             {
+//               subaccount: process.env.VENDOR_SUBACCOUNT_CODE,
+//               share: 95,
+//             },
+//           ],
 //         },
 //       },
 //       {
