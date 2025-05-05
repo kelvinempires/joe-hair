@@ -25,7 +25,7 @@ const Help = () => {
   ];
 
   return (
-    <div className="max-w-3xl mx-auto p-8 bg-gray-100 shadow-md rounded-lg">
+    <div className="max-w-4xl mx-auto p-8  bg-gray-100 shadow-md rounded-lg">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Help Center</h2>
       <p className="text-gray-600 mb-4">
         Need assistance? Browse our FAQs or contact us directly.

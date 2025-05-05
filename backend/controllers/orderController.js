@@ -127,10 +127,7 @@ const placeOrderPaystack = async (req, res) => {
     const email = address?.email; // Extract email from the address object
     const { origin } = req.headers;
     const adminOrigin = process.env.ADMIN_FRONTEND_URL;
-    const baseUrl =
-      origin === adminOrigin
-        ? process.env.FRONTEND_URL
-        : origin || process.env.FRONTEND_URL;
+    const baseUrl = origin === adminOrigin ? process.env.FRONTEND_URL : origin || process.env.FRONTEND_URL;
 
     console.log("Request Body:", req.body); // Debugging
     console.log("Email received:", email); // Debugging
@@ -430,32 +427,7 @@ const updateStatus = async (req, res) => {
 };
 
 
-const placeOrderRazorpay = async (req, res) => {
-  try {
-    const { userId, items, amount, address } = req.body;
-    const orderData = {
-      userId,
-      items,
-      address,
-      amount,
-      paymentMethod: "Razorpay",
-      payment: false,
-      date: Date.now(),
-    };
-    const newOrder = new orderModel(orderData);
-    await newOrder.save();
-    await UserModel.findByIdAndUpdate(userId, { cartData: {} });
-    res.json({ success: true, message: "Order placed successfully" });
-  } catch (error) {
-    console.error("Error placing Razorpay order:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to place order. Please try again later.",
-      });
-  }
-};
+
 export {
   placeOrder,
   placeOrderStripe,
@@ -463,7 +435,6 @@ export {
   userOrders,
   updateStatus,
   verifyStripe,
-  placeOrderRazorpay,
   placeOrderPaystack,
   verifyPaystack,
 };
