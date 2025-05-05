@@ -1,5 +1,5 @@
 import express from 'express';
-import { allOrders, placeOrder, placeOrderPaystack, placeOrderStripe, updateStatus, userOrders, verifyPaystack, verifyStripe } from '../controllers/orderController.js';
+import { allOrders, handlePaystackWebhook, placeOrder, placeOrderPaystack, placeOrderStripe, updateStatus, userOrders, verifyPaystack, verifyStripe } from '../controllers/orderController.js';
 import adminAuth from '../middleware/adminAuth.js';
 import authUser from '../middleware/auth.js';
 
@@ -21,5 +21,7 @@ orderRouter.post('/user-orders', authUser, userOrders);
 //verify payment
 orderRouter.post('/verifyStripe', authUser, verifyStripe);
 orderRouter.post('/verifyPaystack', authUser, verifyPaystack);
+orderRouter.post("/webhook/paystack", authUser, handlePaystackWebhook);
+
 
 export default orderRouter;

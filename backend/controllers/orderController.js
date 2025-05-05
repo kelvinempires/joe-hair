@@ -4,6 +4,8 @@ import Stripe from "stripe";
 import paystackPkg from "paystack";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid"; // Import UUID for generating unique references
+import crypto from "crypto";
+
 
 
 
@@ -338,6 +340,49 @@ const placeOrderPaystack = async (req, res) => {
 //   }
 // };
 
+const handlePaystackWebhook = async (req, res) => {
+  try {
+    const secret = process.env.PAYSTACK_SECRET_KEY;
+
+    // Verify the webhook signature
+    const hash = crypto
+      .createHmac("sha512", secret)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
+
+    if (hash !== req.headers["x-paystack-signature"]) {
+      return res.status(401).send("Invalid signature");
+    }
+
+    const event = req.body;
+
+    // Handle the event
+    if (event.event === "charge.success") {
+      const { reference, status } = event.data;
+
+      if (status === "success") {
+        console.log(`Payment successful for reference: ${reference}`);
+        // Update the order in the database
+        const order = await orderModel.findOneAndUpdate(
+          { reference },
+          { payment: true },
+          { new: true }
+        );
+
+        if (order) {
+          console.log("Order updated successfully:", order);
+        } else {
+          console.error("Order not found for reference:", reference);
+        }
+      }
+    }
+
+    res.status(200).send("Webhook received");
+  } catch (error) {
+    console.error("Error handling Paystack webhook:", error.message);
+    res.status(500).send("Internal Server Error");
+  }
+};
 const verifyPaystack = async (req, res) => {
   const { reference, orderId, userId } = req.body;
   try {
@@ -437,4 +482,5 @@ export {
   verifyStripe,
   placeOrderPaystack,
   verifyPaystack,
+  handlePaystackWebhook,
 };
