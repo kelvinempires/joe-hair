@@ -7,8 +7,6 @@ import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
 import cardRouter from "./routes/cardRoute.js";
 import orderRouter from "./routes/orderRoute.js";
-import paystackWebhookHandler from "./paystackWebhook.js";
-import bodyParser from "body-parser";
 
 // Use the webhook in the backend
 
@@ -26,7 +24,6 @@ app.use(
       const allowedOrigins = [
         "https://joel-hair.vercel.app",
         "https://joel-admin.vercel.app",
-        "http://localhost:3000",
         "http://localhost:5173",
         "http://localhost:5174",
       ];

@@ -11,7 +11,7 @@ orderRouter.post("/status", adminAuth, updateStatus);
 //payment features
 orderRouter.post('/place', authUser, placeOrder);
 orderRouter.post('/stripe',authUser,placeOrderStripe );
-orderRouter.post("/paystack", authUser, placeOrderPaystack);
+orderRouter.post("/paystack", placeOrderPaystack);
 
 
 
