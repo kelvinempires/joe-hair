@@ -123,6 +123,7 @@ const verifyStripe = async (req, res) => {
 };
 
 const placeOrderPaystack = async (req, res) => {
+    console.log("placeOrderPaystack function triggered");
   try {
     // Extract necessary data from request body
     const { userId, items, amount, address } = req.body;
