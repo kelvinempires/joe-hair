@@ -57,7 +57,7 @@ const addToCart = async (req, res) => {
     // **Fix:** Save the updated user document
     await userData.save();
 
-    return res.json({ success: true, message: "Product added to cart" });
+    return res.json({ success: true, message: "Product added to your cart" });
   } catch (error) {
     console.error("Error updating cart:", error);
     return res
