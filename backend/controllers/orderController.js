@@ -341,7 +341,8 @@ const placeOrderPaystack = async (req, res) => {
 //   }
 // };
 
-const handlePaystackWebhook = async (req, res) => {
+export const handlePaystackWebhook = async (req, res) => {
+    console.log("Webhook triggered");
   try {
     const secret = process.env.PAYSTACK_SECRET_KEY;
 
@@ -483,5 +484,4 @@ export {
   verifyStripe,
   placeOrderPaystack,
   verifyPaystack,
-  handlePaystackWebhook,
 };
