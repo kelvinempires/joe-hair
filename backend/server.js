@@ -55,7 +55,7 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
 
-app.post("/api/paystack-webhook", authUser, handlePaystackWebhook);
+app.post("/api/paystack-webhook", handlePaystackWebhook);
 
 
 // Root route
