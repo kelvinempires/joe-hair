@@ -117,7 +117,7 @@ const verifyStripe = async (req, res) => {
       .status(500)
       .json({
         success: false,
-        message: "Failed to your verify payment. Please try again later.",
+        message: "Failed to verify payment. Please try again later.",
       });
   }
 };
