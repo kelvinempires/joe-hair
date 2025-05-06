@@ -7,11 +7,9 @@ import userRouter from "./routes/userRoute.js";
 import productRouter from "./routes/productRoute.js";
 import cardRouter from "./routes/cardRoute.js";
 import orderRouter from "./routes/orderRoute.js";
-// import { handlePaystackWebhook } from "./controllers/orderController.js";
 import authUser from "./middleware/auth.js";
-import paystackWebhookHandler from "./paystackWebhook.js";
+import { handlePaystackWebhook } from "./controllers/orderController.js";
 
-// Use the webhook in the backend
 
 //app config
 const app = express();
@@ -56,7 +54,7 @@ app.use("/api/product", productRouter);
 app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
 
-app.post("/api/paystack-webhook", authUser, paystackWebhookHandler);
+app.post("/api/paystack-webhook", authUser, handlePaystackWebhook);
 
 
 // Root route
