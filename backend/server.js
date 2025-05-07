@@ -57,6 +57,16 @@ app.use("/api/order", orderRouter);
 
 app.post("/api/paystack-webhook", authUser, handlePaystackWebhook);
 
+app._router.stack.forEach((middleware) => {
+  if (middleware.route) {
+    console.log(
+      `Route: ${middleware.route.path}, Methods: ${Object.keys(
+        middleware.route.methods
+      )}`
+    );
+  }
+});
+
 
 // Root route
 app.get("/", (req, res) => {
