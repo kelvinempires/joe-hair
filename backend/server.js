@@ -53,7 +53,7 @@ app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
-
+console.log("Order routes mounted at /api/order");
 // Root route
 app.get("/", (req, res) => {
   res.status(200).json({ message: "App is running successfully" });

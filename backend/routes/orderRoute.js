@@ -11,9 +11,26 @@ orderRouter.post("/status", adminAuth, updateStatus);
 //payment features
 orderRouter.post('/place', authUser, placeOrder);
 orderRouter.post('/stripe',authUser,placeOrderStripe );
-orderRouter.post("/paystack", authUser, placeOrderPaystack);
-orderRouter.post("/paystack-webhook", authUser, handlePaystackWebhook )
+// orderRouter.post("/paystack", authUser, placeOrderPaystack);
+// orderRouter.post("/paystack-webhook", handlePaystackWebhook )
+orderRouter.post(
+  "/paystack",
+  (req, res, next) => {
+    console.log("Request received at /paystack");
+    next();
+  },
+  authUser,
+  placeOrderPaystack
+);
 
+orderRouter.post(
+  "/paystack-webhook",
+  (req, res, next) => {
+    console.log("Request received at /paystack-webhook");
+    next();
+  },
+  handlePaystackWebhook
+);
 
 //user features
 orderRouter.post('/user-orders', authUser, userOrders);
@@ -21,7 +38,6 @@ orderRouter.post('/user-orders', authUser, userOrders);
 //verify payment
 orderRouter.post('/verifyStripe', authUser, verifyStripe);
 orderRouter.post('/verifyPaystack', authUser, verifyPaystack);
-// orderRouter.post("/webhook/paystack", authUser, handlePaystackWebhook);
 
 
 export default orderRouter;

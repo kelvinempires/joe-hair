@@ -6,10 +6,6 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid"; // Import UUID for generating unique references
 import crypto from "crypto";
 
-
-
-
-
 const currency = "NGN";
 // Set the delivery charge from environment variable or default to 10
 const deliveryCharge = process.env.DELIVERY_CHARGE || 10;
@@ -19,8 +15,8 @@ const paystack = paystackPkg(process.env.PAYSTACK_SECRET_KEY);
 const placeOrder = async (req, res) => {
   try {
     const { userId, items, amount, address } = req.body;
-      const reference = uuidv4();
-      console.log("Generated reference:", reference);
+    const reference = uuidv4();
+    console.log("Generated reference:", reference);
     const orderData = {
       userId,
       items,
@@ -29,7 +25,7 @@ const placeOrder = async (req, res) => {
       paymentMethod: "Cash on Delivery",
       payment: false,
       date: Date.now(),
-      reference, 
+      reference,
     };
     const newOrder = new orderModel(orderData);
     await newOrder.save();
@@ -37,12 +33,10 @@ const placeOrder = async (req, res) => {
     res.json({ success: true, message: "Order placed successfully" });
   } catch (error) {
     console.error("Error placing order:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to place order. Please try again later.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to place order. Please try again later.",
+    });
   }
 };
 
@@ -91,12 +85,10 @@ const placeOrderStripe = async (req, res) => {
     res.json({ success: true, session_url: session.url });
   } catch (error) {
     console.error("Error placing Stripe order:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to place order. Please try again later.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to place order. Please try again later.",
+    });
   }
 };
 
@@ -113,24 +105,25 @@ const verifyStripe = async (req, res) => {
     }
   } catch (error) {
     console.error("Error verifying Stripe payment:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to verify payment. Please try again later.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to verify payment. Please try again later.",
+    });
   }
 };
 
 const placeOrderPaystack = async (req, res) => {
-    console.log("placeOrderPaystack function triggered");
+  console.log("placeOrderPaystack function triggered");
   try {
     // Extract necessary data from request body
     const { userId, items, amount, address } = req.body;
     const email = address?.email; // Extract email from the address object
     const { origin } = req.headers;
     const adminOrigin = process.env.ADMIN_FRONTEND_URL;
-    const baseUrl = origin === adminOrigin ? process.env.FRONTEND_URL : origin || process.env.FRONTEND_URL;
+    const baseUrl =
+      origin === adminOrigin
+        ? process.env.FRONTEND_URL
+        : origin || process.env.FRONTEND_URL;
 
     console.log("Request Body:", req.body); // Debugging
     console.log("Email received:", email); // Debugging
@@ -270,7 +263,7 @@ const placeOrderPaystack = async (req, res) => {
 //     // Generate a unique reference
 //     const reference = uuidv4();
 //     console.log("Generated reference:", reference); // Debugging log
-    
+
 //     // Prepare order data
 //     const orderData = {
 //       userId,
@@ -285,8 +278,6 @@ const placeOrderPaystack = async (req, res) => {
 
 //     const newOrder = new orderModel(orderData);
 //     await newOrder.save();
-
-    
 
 //     // Initialize Paystack Transaction
 //     const response = await axios.post(
@@ -342,6 +333,7 @@ const placeOrderPaystack = async (req, res) => {
 // };
 
 const handlePaystackWebhook = async (req, res) => {
+  console.log("handlePaystackWebhook function triggered");
   try {
     const secret = process.env.PAYSTACK_SECRET_KEY;
 
@@ -425,12 +417,10 @@ const allOrders = async (req, res) => {
     res.json({ success: true, orders });
   } catch (error) {
     console.error("Error fetching all orders:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to fetch orders. Please try again later.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch orders. Please try again later.",
+    });
   }
 };
 
@@ -447,12 +437,10 @@ const userOrders = async (req, res) => {
     res.json({ success: true, orders });
   } catch (error) {
     console.error("Error fetching user orders:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to fetch orders. Please try again later.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch orders. Please try again later.",
+    });
   }
 };
 
@@ -463,16 +451,12 @@ const updateStatus = async (req, res) => {
     res.json({ success: true, message: "Status updated successfully" });
   } catch (error) {
     console.error("Error updating order status:", error.message);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to update status. Please try again later.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to update status. Please try again later.",
+    });
   }
 };
-
-
 
 export {
   placeOrder,
