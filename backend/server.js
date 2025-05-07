@@ -49,16 +49,11 @@ app.get("/", (req, res) => {
 });
 
 // Error handling middleware
-// app.use((err, req, res, next) => {
-//   console.error("Unhandled error:", err);
-//   res.status(500).json({ success: false, message: "Internal server error." });
-// });
+app.use((err, req, res, next) => {
+  console.error("Unhandled error:", err);
+  res.status(500).json({ success: false, message: "Internal server error." });
+});
 
-// Unified 404 handler
-// app.use((req, res) => {
-//   console.log(`Unrecognized route: ${req.method} ${req.url}`);
-//   res.status(404).json({ message: "Route not found" });
-// });
 
 // Start server
 const startServer = async () => {
