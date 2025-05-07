@@ -104,6 +104,7 @@ const PlaceOrder = () => {
             orderData,
             { headers: { token } }
           );
+          console.log(responsePaystack);
           if (responsePaystack.data.success) {
             const { authorization_url } = responsePaystack.data;
             window.location.replace(authorization_url); // Redirect to Paystack payment page
