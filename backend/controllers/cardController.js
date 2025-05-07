@@ -61,7 +61,8 @@ const addToCart = async (req, res) => {
   } catch (error) {
     console.error("Error updating cart:", error);
     return res
-      .status.json({ success: false, message: "Database update failed." });
+      .status(500)
+      .json({ success: false, message: "Database update failed." });
   }
 };
 // update cart
