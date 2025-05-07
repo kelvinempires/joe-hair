@@ -79,32 +79,18 @@ const ShopContextProvider = (props) => {
 
   const getCartAmount = () => {
     let totalAmount = 0;
-   if (
-     !cartItems ||
-     Object.keys(cartItems).length === 0 ||
-     products.length === 0
-   ) {
-     return totalAmount; // Return 0 if cartItems or products are empty
-   }
-
-   for (const items in cartItems) {
-     const itemInfo = products.find((product) => product._id === items);
-
-     if (!itemInfo) {
-       console.warn(`Product with ID ${items} not found in products array.`);
-       continue; // Skip if product is not found
-     }
-
-     for (const item in cartItems[items]) {
-       try {
-         if (cartItems[items][item] > 0) {
-           totalAmount += itemInfo.price * cartItems[items][item];
-         }
-       } catch (error) {
-         console.error("Error calculating cart amount:", error);
-       }
-     }
-   }
+    for (const items in cartItems) {
+      let itemInfo = products.find((product) => product._id === items);
+      for (const item in cartItems[items]) {
+        try {
+          if (cartItems[items][item] > 0) {
+            totalAmount += itemInfo.price * cartItems[items][item];
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
     return totalAmount;
   };
 
