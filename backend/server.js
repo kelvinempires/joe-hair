@@ -8,13 +8,11 @@ import productRouter from "./routes/productRoute.js";
 import cardRouter from "./routes/cardRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 
-
-//app config
+// App configuration
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// middleware
-
+// Middleware
 app.use(express.json());
 
 app.use(
@@ -38,22 +36,13 @@ app.use(
   })
 );
 
-
-// Debugging middleware
-app.use((req, res,) => {
-  console.log(`Incoming request: ${req.method} ${req.url}`);
-  console.log(`Origin: ${req.headers.origin}`);
-  res.status(404).json({ message: "Route not found" });
-});
-
-
-//api end point
-
+// API endpoints
 app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
 console.log("Order routes mounted at /api/order");
+
 // Root route
 app.get("/", (req, res) => {
   res.status(200).json({ message: "App is running successfully" });
@@ -65,11 +54,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: "Internal server error." });
 });
 
+// Unified 404 handler
 app.use((req, res) => {
   console.log(`Unrecognized route: ${req.method} ${req.url}`);
   res.status(404).json({ message: "Route not found" });
 });
 
+// Start server
 const startServer = async () => {
   try {
     await connectMongoDB();
@@ -84,4 +75,3 @@ const startServer = async () => {
 };
 
 startServer();
-
