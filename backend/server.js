@@ -65,6 +65,10 @@ app.use((err, req, res, next) => {
   res.status(500).json({ success: false, message: "Internal server error." });
 });
 
+app.use((req, res) => {
+  console.log(`Unrecognized route: ${req.method} ${req.url}`);
+  res.status(404).json({ message: "Route not found" });
+});
 
 const startServer = async () => {
   try {
