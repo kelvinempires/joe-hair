@@ -8,7 +8,6 @@ import productRouter from "./routes/productRoute.js";
 import cardRouter from "./routes/cardRoute.js";
 import orderRouter from "./routes/orderRoute.js";
 import authUser from "./middleware/auth.js";
-import { handlePaystackWebhook } from "./controllers/orderController.js";
 
 
 //app config
@@ -54,19 +53,6 @@ app.use("/api/user", userRouter);
 app.use("/api/product", productRouter);
 app.use("/api/cart", cardRouter);
 app.use("/api/order", orderRouter);
-
-app.post("/api/paystack-webhook", authUser, handlePaystackWebhook);
-
-app._router.stack.forEach((middleware) => {
-  if (middleware.route) {
-    console.log(
-      `Route: ${middleware.route.path}, Methods: ${Object.keys(
-        middleware.route.methods
-      )}`
-    );
-  }
-});
-
 
 // Root route
 app.get("/", (req, res) => {
