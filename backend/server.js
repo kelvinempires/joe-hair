@@ -17,37 +17,29 @@ const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
 
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       const allowedOrigins = [
-//         "https://joel-hair.vercel.app",
-//         "https://joel-admin.vercel.app",
-//         "http://localhost:5173",
-//         "http://localhost:5174",
-//         "https://api.paystack.co/transaction/initialize",
-//       ];
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error("Not allowed by CORS"));
-//       }
-//     },
-//     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-//     credentials: true, // Allow cookies or authentication headers
-//   })
-// );
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "https://joel-hair.vercel.app",
+        "https://joel-admin.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "https://api.paystack.co/transaction/initialize",
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true, // Allow cookies or authentication headers
+  })
+);
 
 
 // Debugging middleware
-
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-  })
-);
 app.use((req, res,) => {
   console.log(`Incoming request: ${req.method} ${req.url}`);
   console.log(`Origin: ${req.headers.origin}`);
