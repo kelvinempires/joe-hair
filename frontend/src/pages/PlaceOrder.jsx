@@ -2,12 +2,12 @@ import React, { useContext, useState } from "react";
 import axios from "axios";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
-import { assets } from "../assets/frontend_assets/assets";
+// import { assets } from "../assets/frontend_assets/assets";
 import { ShopContext } from "../context/ShopContext";
 import { toast } from "react-toastify";
 
 const PlaceOrder = () => {
-  const [method, setMethod] = useState("paystack");
+  const [method,] = useState("paystack");
   const {
     navigate,
     backendUrl,
@@ -228,11 +228,11 @@ const PlaceOrder = () => {
           <CartTotal />
         </div>
         <div className="mt-12">
-          <Title test1={"PAYMENT"} test2={"METHOD"} />
+          {/* <Title test1={"PAYMENT"} test2={"METHOD"} /> */}
           {/* ---------text payment selection-------- */}
-          <div className="flex gap-3 flex-col lg:flex-row">
+          {/* <div className="flex gap-3 flex-col lg:flex-row"> */}
             {/* Stripe Payment Option */}
-            <div
+            {/* <div
               onClick={() => setMethod("stripe")}
               className="flex items-center gap-0 border border-gray-300 lg:border-0 px-3 cursor-pointer"
             >
@@ -246,10 +246,10 @@ const PlaceOrder = () => {
                 className="h-5 mx-4"
                 alt="stripe logo"
               />
-            </div>
+            </div> */}
 
             {/* Cash on Delivery Option */}
-            <div
+            {/* <div
               onClick={() => setMethod("cod")}
               className="flex items-center gap-0 border border-gray-300 lg:border-0 p-2 px-3 cursor-pointer"
             >
@@ -259,10 +259,10 @@ const PlaceOrder = () => {
                 } `}
               ></p>
               <p className="text-gray-500 text-sm font-medium mx-4">COD</p>
-            </div>
+            </div> */}
 
             {/* Paystack Payment Option */}
-            <div
+            {/* <div
               onClick={() => setMethod("paystack")}
               className="flex items-center gap-0 border border-gray-300 lg:border-0 p-2 px-3 cursor-pointer"
             >
@@ -274,12 +274,12 @@ const PlaceOrder = () => {
               <h2 className="text-green-500 text-md font-semibold mx-4">
                 Nigeria Payment
               </h2>
-            </div>
-          </div>
+            </div> */}
+          {/* </div> */}
           <div className=" w-fit text-end mt-8 lg:ml-40">
             <button
               type="submit"
-              className="bg-black text-white px-16 py-3 text-sm flex items-center justify-center"
+              className="bg-green-500 text-white px-16 py-3 text-sm flex items-center justify-center rounded-md hover:bg-green-600 transition-all duration-300 cursor-pointer"
               disabled={loading} // Disable the button while loading
             >
               {loading ? (
