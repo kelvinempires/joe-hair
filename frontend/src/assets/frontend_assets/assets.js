@@ -2,6 +2,9 @@ import p_img1 from './imag1.png'
 import p_img5 from './imag2.png'
 import p_img6 from './imag3.png'
 import p_img01 from "./imag01.png";
+import person from "./person.svg";
+import mail from "./mail.svg";
+import lock from "./lock.svg";
 
 // import p_img2_3 from './p_img2_3.png'
 // import p_img4 from './p_img4.png'
@@ -77,9 +80,12 @@ import p3 from "./p3.png";
 
 
 export const assets = {
-    p1,
-    p2,
-    p3,
+  person,
+  lock,
+  mail,
+  p1,
+  p2,
+  p3,
   logo,
   hero_img,
   cart_icon,

@@ -87,7 +87,7 @@ const Cart = () => {
           );
         })}
       </div>
-      <div className="flex justify-end my-20">
+      <div className="flex justify-end mt-20">
         <div className="w-full sm:w-[450px]">
           <CartTotal />
           <div className="w-fit text-end">

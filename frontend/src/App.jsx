@@ -19,6 +19,8 @@ import PrivacyPolicy from "./pages/PrivacyAndPolicy";
 import TermsAndConditions from "./pages/TeamsAndCondition";
 import FAQ from "./pages/FAQ";
 import Help from "./pages/Help";
+import ResetPassword from "./pages/ResetPassword";
+import EmailVerify from "./pages/EmailVerify";
 
 function App() {
   return (
@@ -40,11 +42,10 @@ function App() {
         <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/help" element={<Help />} />
-
-        {/* Help Center */}
         <Route path="/faq" element={<FAQ />} />
-
         <Route path="*" element={<NotFound />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="email-verify" element={<EmailVerify />} />
       </Routes>
       <Footer />
     </div>
