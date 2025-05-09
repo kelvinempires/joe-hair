@@ -16,8 +16,21 @@ const ShopContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
+  const [user, setUser] = useState(null); // add this
+
   // const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const getUserProfile = async (token) => {
+    try {
+      const res = await axios.get(`${backendUrl}/api/user/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUser(res.data.userData); 
+    } catch (error) {
+      console.error("Error fetching user profile", error);
+    }
+  };
 
   const addToCart = async (itemId, size) => {
     if (!size) {
@@ -144,12 +157,14 @@ const ShopContextProvider = (props) => {
       const localToken = localStorage.getItem("token");
       setToken(localToken);
       getUserCart(localToken);
+      getUserProfile(localToken); // Fetch user info too
     }
   }, []);
 
   useEffect(() => {
     if (token) {
       getUserCart(token);
+      getUserProfile(token); // Fetch again if token changes
     }
   }, [token]); // Adding token as a dependency
 
@@ -171,6 +186,8 @@ const ShopContextProvider = (props) => {
     token,
     setToken,
     setCartItems,
+    user,
+    setUser,
   };
 
   return (
