@@ -38,7 +38,8 @@ const Login = () => {
           toast.success("Sign up successful! Redirecting...");
           navigate("/");
         } else {
-          toast.error(response.data.message || "Sign up failed.");
+          const errorMessage = response?.data?.msg || "Sign up failed.";
+          toast.error(errorMessage);
         }
       } else {
         const response = await axios.post(`${backendUrl}/api/user/login`, {
@@ -51,18 +52,19 @@ const Login = () => {
           toast.success("Login successful! Redirecting...");
           navigate("/");
         } else {
-          toast.error(response.data.message || "Login failed.");
+          toast.error(response.data.msg || "Login failed.");
         }
       }
     } catch (error) {
       console.error("Error during login/signup:", error);
       toast.error(
-        error.response?.data?.message || "An unexpected error occurred."
+        error.response?.data?.msg || "An unexpected error occurred."
       );
     } finally {
       setLoading(false); // Stop loading
     }
   };
+  
 
   useEffect(() => {
     if (token) {

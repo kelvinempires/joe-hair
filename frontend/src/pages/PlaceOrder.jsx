@@ -102,7 +102,7 @@ const PlaceOrder = () => {
           const responsePaystack = await axios.post(
             backendUrl + "/api/order/paystack",
             orderData,
-            { headers: { token } }
+            { headers: { Authorization: `Bearer ${token}` } }
           );
           console.log(responsePaystack);
           if (responsePaystack.data.success) {

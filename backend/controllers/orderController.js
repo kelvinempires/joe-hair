@@ -116,7 +116,8 @@ const placeOrderPaystack = async (req, res) => {
   console.log("placeOrderPaystack function triggered");
   try {
     // Extract necessary data from request body
-    const { userId, items, amount, address } = req.body;
+    const { items, amount, address } = req.body;
+    const userId = req.user?._id; // Extract from token
     const email = address?.email; // Extract email from the address object
     const { origin } = req.headers;
     const adminOrigin = process.env.ADMIN_FRONTEND_URL;

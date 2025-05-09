@@ -79,7 +79,10 @@ const Product = () => {
               ))}
             </div>
           </div>
-          <button onClick={()=>addToCart(productData._id,Size)} className="bg-black text-white px-8 py-3 text-sm active:bg-gray-700">
+          <button
+            onClick={() => addToCart(productData._id, Size)}
+            className="bg-black text-white px-8 py-3 text-sm rounded-md hover:bg-gray-800 cursor-pointer active:bg-gray-700 transition duration-200 ease-in-out"
+          >
             ADD TO CART
           </button>
           <hr className="mt-8 sm:w-4/5 border-gray-300" />
@@ -114,7 +117,10 @@ const Product = () => {
         </div>
       </div>
       {/* --------display related product------- */}
-      <RelatedProduct category={productData.category} subCategory={productData.subCategory}/>
+      <RelatedProduct
+        category={productData.category}
+        subCategory={productData.subCategory}
+      />
     </div>
   ) : (
     <div className="opacity-0"></div>

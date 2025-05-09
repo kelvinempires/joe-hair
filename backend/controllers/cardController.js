@@ -26,10 +26,10 @@ import UserModel from "../models/user.model.js";
 
 const addToCart = async (req, res) => {
   try {
-    const { userId, itemId, size } = req.body;
+   const { itemId, size } = req.body;
+   const userId = req.user._id;
+   const userData = await UserModel.findById(userId);
 
-    // Find user
-    const userData = await UserModel.findById(userId);
     if (!userData) {
       return res
         .status(404)
@@ -67,35 +67,47 @@ const addToCart = async (req, res) => {
 };
 // update cart
 const updateCart = async (req, res) => {
-    try {
-        const { userId, itemId, size, quantity } = req.body;
-        const userData = await UserModel.findById(userId);
-        let cartData = await userData.cartData;
-        cartData[itemId][size] = quantity;
-        await UserModel.findByIdAndUpdate(userId, { cartData });
-        res.json({ success: true, message: "Cart updated" });
+  try {
+    const { itemId, size } = req.body;
+    const userId = req.user._id;
+    const userData = await UserModel.findById(userId);
 
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
-        
-    }
+    userData.cartData[itemId][size] = quantity;
+    userData.markModified("cartData");
+    await userData.save();
+    res.json({ success: true, message: "Cart updated" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
 };
 
 //get user cart data
+// get user cart data
 const getUserCart = async (req, res) => {
-    try {
-        const { userId } = req.body;
-        const userData = await UserModel.findById(userId);
-        const cartData = await userData.cartData;
+  try {
+    // ✅ Use ID from req.user instead of req.body
+    const userId = req.user._id;
+    const userData = await UserModel.findById(userId);
 
-        res.json({ success: true, cartData});
-
-    } catch (error) {
-        console.log(error);
-        res.json({ success: false, message: error.message });
-        
+    if (!userData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
+
+    const cartData = userData.cartData;
+    if (!cartData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Cart not found" });
+    }
+
+    res.json({ success: true, cartData });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
 };
 
 export { addToCart, updateCart, getUserCart };

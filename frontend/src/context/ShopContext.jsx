@@ -9,14 +9,15 @@ export const ShopContext = createContext();
 const ShopContextProvider = (props) => {
   const currency = "₦"; // Updated to Nigerian Naira symbol
   const delivery_fee = 5000;
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+  const backendUrl =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
   const [search, setSearch] = useState("");
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
   const [token, setToken] = useState("");
   // const [loading, setLoading] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const addToCart = async (itemId, size) => {
     if (!size) {
@@ -35,15 +36,19 @@ const ShopContextProvider = (props) => {
       cartData[itemId][size] = 1;
     }
     setCartItems(cartData);
-   if (token) {
-     try {
-       await axios.post(backendUrl + "/api/cart/add",{ itemId, size },{ headers: { token } });
-       toast.success("Item added to cart!");
-     } catch (error) {
-       console.error(error);
-       toast.error(error.response?.data?.message || "Failed to add item.");
-     }
-   }
+    if (token) {
+      try {
+        await axios.post(
+          backendUrl + "/api/cart/add",
+          { itemId, size },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        toast.success("Item added to cart!");
+      } catch (error) {
+        console.error(error);
+        toast.error(error.response?.data?.message || "Failed to add item.");
+      }
+    }
   };
 
   const getCartCount = () => {
@@ -67,9 +72,13 @@ const ShopContextProvider = (props) => {
     cartData[itemId][size] = quantity;
     setCartItems(cartData);
 
-     if (token) {
+    if (token) {
       try {
-        await axios.post(backendUrl + "/api/cart/update", { itemId, size, quantity }, { headers: { token } });
+        await axios.post(
+          backendUrl + "/api/cart/update",
+          { itemId, size, quantity },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
       } catch (error) {
         console.error(error);
         toast.error(error.response?.data?.message || "Failed to update item.");
@@ -96,21 +105,25 @@ const ShopContextProvider = (props) => {
 
   const getProductsData = async () => {
     try {
-      const response = await axios.get(backendUrl + '/api/product/list');
-      if (response.data.success){
-        setProducts(response.data.products)
-      }else{
+      const response = await axios.get(backendUrl + "/api/product/list");
+      if (response.data.success) {
+        setProducts(response.data.products);
+      } else {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       toast.error(error.message);
     }
-  }
+  };
 
   const getUserCart = async (token) => {
     try {
-      const response = await axios.post(backendUrl + "/api/cart/get", {}, { headers: { token } });
+      const response = await axios.post(
+        backendUrl + "/api/cart/get",
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       if (response.data.success) {
         setCartItems(response.data.cartData);
       } else {
@@ -119,20 +132,26 @@ const ShopContextProvider = (props) => {
     } catch (error) {
       console.log(error);
       toast.error(error.response?.data?.message || "Failed to get cart.");
-      
     }
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     getProductsData();
-  },[])
+  }, []);
 
-  useEffect(()=>{
-    if(!token && localStorage.getItem("token")){
-      setToken(localStorage.getItem("token"));
-      getUserCart(localStorage.getItem("token"));
+  useEffect(() => {
+    if (!token && localStorage.getItem("token")) {
+      const localToken = localStorage.getItem("token");
+      setToken(localToken);
+      getUserCart(localToken);
     }
-  },[])
+  }, []);
+
+  useEffect(() => {
+    if (token) {
+      getUserCart(token);
+    }
+  }, [token]); // Adding token as a dependency
 
   const value = {
     products: products || [],
@@ -151,12 +170,13 @@ const ShopContextProvider = (props) => {
     backendUrl,
     token,
     setToken,
-    setCartItems
+    setCartItems,
   };
 
   return (
     <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>
   );
 };
+
 
 export default ShopContextProvider;

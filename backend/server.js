@@ -23,7 +23,6 @@ app.use(
         "https://joel-admin.vercel.app",
         "http://localhost:5173",
         "http://localhost:5174",
-        "https://api.paystack.co/transaction/initialize",
       ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);

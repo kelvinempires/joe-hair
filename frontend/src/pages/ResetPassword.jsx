@@ -46,7 +46,7 @@ const ResetPassword = () => {
     setLoading(true); // Set loading to true when form is submitted
     try {
       const { data } = await axios.post(
-        `${backendUrl}/api/auth/send-reset-otp`,
+        `${backendUrl}/api/user/send-reset-otp`,
         { email }
       );
       data.success ? toast.success(data.message) : toast.error(data.message);
@@ -77,7 +77,7 @@ const ResetPassword = () => {
     setLoading(true); // Set loading to true when form is submitted
     try {
       const { data } = await axios.post(
-        `${backendUrl}/api/auth/reset-password`,
+        `${backendUrl}/api/user/reset-password`,
         { email, otp, newPassword }
       );
       data.success ? toast.success(data.message) : toast.error(data.message);
@@ -196,15 +196,9 @@ const ResetPassword = () => {
               required
             />
           </div>
-          <button className="w-full py-2.5 bg-gradient-to-r from-indigo-500 to-indigo-900 text-white rounded-full mt-3 hover:bg-gradient-to-r hover:from-indigo-600 hover:to-indigo-900 transition-all flex items-center justify-center">
+          <button className="w-full bg-gradient-to-r from-indigo-500 to-indigo-900 text-white py-3 rounded-full hover:opacity-90 transition-all flex items-center justify-center">
             {loading ? (
-              <RotatingLines
-                strokeColor="white"
-                strokeWidth="5"
-                animationDuration="0.75"
-                width="24"
-                visible={true}
-              />
+              <div className="w-5 h-5 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
             ) : (
               "Submit"
             )}
