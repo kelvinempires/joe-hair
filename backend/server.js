@@ -21,7 +21,7 @@ app.use(
       const allowedOrigins = [
         "https://joel-hair.vercel.app",
         "https://joel-admin.vercel.app",
-        "http://localhost:5173",
+        "http://localhost:5175",
         "http://localhost:5174",
       ];
       if (!origin || allowedOrigins.includes(origin)) {
