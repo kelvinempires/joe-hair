@@ -43,7 +43,7 @@ const Footer = () => {
           <Link to="/" onClick={scrollToTop}>
             <img
               src={assets.logo}
-              className="w-32 bg-[#f3f4f6] rounded-full mb-2"
+              className="w-32 bg-black rounded-full mb-2"
               alt="logo"
             />
           </Link>
