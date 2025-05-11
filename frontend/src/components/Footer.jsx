@@ -64,7 +64,7 @@ const Footer = () => {
           <ul className="flex gap-4 text-xl mt-2.5">
             <li>
               <a
-                href="https://www.facebook.com/JoeFranklin"
+                href="https://www.facebook.com/IghojaEdijanaJoel"
                 target="_blank"
                 rel="noopener noreferrer"
               >
