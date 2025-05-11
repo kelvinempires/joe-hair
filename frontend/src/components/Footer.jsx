@@ -23,8 +23,8 @@ const Footer = () => {
 
   const getInTorch = [
     { path: "/contact", label: "Contact us" },
-    { label: "+234-915-342-1622" },
-    { label: "Kelvinewurum@gmail.com" },
+    { label: "+234-810-280-6108" },
+    { label: "joelighoja507@gmail.com" },
   ];
 
   // Scroll to the top of the page smoothly
