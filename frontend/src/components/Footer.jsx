@@ -82,7 +82,7 @@ const Footer = () => {
             </li>
             <li>
               <a
-                href="https://www.instagram.com/ighojajoel"
+                href="https://www.instagram.com/joelhairempire"
                 target="_blank"
                 rel="noopener noreferrer"
               >
