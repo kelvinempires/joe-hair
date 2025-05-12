@@ -5,10 +5,18 @@ import { Link } from "react-router-dom";
 
 const ProductItem = ({ id, image, name, price }) => {
   const { currency } = useContext(ShopContext);
+   const scrollToTop = () => {
+     window.scrollTo({
+       top: 0,
+       behavior: "smooth",
+     });
+   };
+
 
   return (
     <Link
       to={`/product/${id}`}
+      onClick={scrollToTop}
       className="block bg-white p-3 rounded-lg shadow-md transition-all duration-300 hover:shadow-lg hover:scale-105"
     >
       <div className="overflow-hidden rounded-md">
