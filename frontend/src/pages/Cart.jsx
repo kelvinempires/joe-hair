@@ -79,7 +79,7 @@ const Cart = () => {
               ></input>
               <img
                 onClick={() => updateQuantity(item._id, item.size, 0)}
-                className="w-4 mr-4 sm:w-5 cursor-pointer"
+                className="w-4 mr-4 sm:w-5 cursor-pointer hover:scale-110 transition-all duration-300 hover:opacity-80 hover:rotate-12 hover:translate-x-1 hover:translate-y-1 hover:shadow-lg hover:shadow-gray-300  "
                 src={assets.bin_icon}
                 alt="bin icon"
               />
