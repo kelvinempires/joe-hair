@@ -23,8 +23,8 @@ export const Contact = () => {
             <br /> fagba ifakojaye lagos state Nigeria
           </p>
           <p className="text-gray-500">
-            Tel: (+234) 915 342 1622 <br />
-            Email: kelvinewurum@gmail.com
+            Tel: (+234) 810-280-6108 <br />
+            Email: joelighoja507@gmail.com
           </p>
           <p className="font-semibold text-xl text-gray-600">
             Careers at joel Empires
