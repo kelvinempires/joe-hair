@@ -17,7 +17,7 @@ const Orders = ({ token }) => {
       const response = await axios.post(
         backendUrl + "/api/order/list",
         {},
-        { headers: { token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.success) {
         setOrders(response.data.orders);
@@ -37,7 +37,7 @@ const Orders = ({ token }) => {
       const response = await axios.post(
         backendUrl + "/api/order/status",
         { orderId, status: event.target.value },
-        { headers: { token } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (response.data.success) {
         toast.success(response.data.message);

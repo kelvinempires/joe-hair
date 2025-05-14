@@ -154,22 +154,109 @@ export const loginUser = async (req, res) => {
 
 //admin login
 
+// export const adminLogin = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     if (
+//       email === process.env.ADMIN_EMAIL &&
+//       password === process.env.ADMIN_PASSWORD
+//     ) {
+//       const token = jwt.sign(email + password, process.env.JWT_SECRET);
+//       res.json({ success: true, token });
+//     } else {
+//       res.json({ success: false, message: "invalid credentials" });
+//     }
+//   } catch (error) {
+//     res.json({ success: false, msg: error.message });
+//   }
+// };
+
+// export const adminLogin = async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+
+//     // Validate input
+//     if (!email || !password) {
+//       return res.status(400).json({
+//         success: false,
+//         msg: "Email and password are required",
+//       });
+//     }
+
+//     // Check if email matches admin
+//     if (email !== process.env.ADMIN_EMAIL) {
+//       return res
+//         .status(401)
+//         .json({ success: false, msg: "Invalid credentials" });
+//     }
+
+//     // Check password using bcrypt
+//     const isMatch = await bcrypt.compare(
+//       password,
+//       process.env.ADMIN_PASSWORD_HASH
+//     );
+//     if (!isMatch) {
+//       return res
+//         .status(401)
+//         .json({ success: false, msg: "Invalid credentials" });
+//     }
+
+//     // Create token with admin role
+//     const token = jwt.sign({ email, role: "admin" }, process.env.JWT_SECRET, {
+//       expiresIn: "7d",
+//     });
+
+//     return res.status(200).json({ success: true, token, role: "admin" });
+//   } catch (error) {
+//     console.error("Admin login error:", error);
+//     return res.status(500).json({ success: false, msg: "Server error" });
+//   }
+// };
+
+
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (
-      email === process.env.ADMIN_EMAIL &&
-      password === process.env.ADMIN_PASSWORD
-    ) {
-      const token = jwt.sign(email + password, process.env.JWT_SECRET);
-      res.json({ success: true, token });
-    } else {
-      res.json({ success: false, message: "invalid credentials" });
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        msg: "Email and password are required",
+      });
     }
+
+    // Check if email matches admin
+    if (email !== process.env.ADMIN_EMAIL) {
+      return res
+        .status(401)
+        .json({ success: false, msg: "Invalid credentials" });
+    }
+
+    // Check password using bcrypt
+    const isMatch = await bcrypt.compare(
+      password,
+      process.env.ADMIN_PASSWORD_HASH
+    );
+
+    if (!isMatch) {
+      return res
+        .status(401)
+        .json({ success: false, msg: "Invalid credentials" });
+    }
+
+    // Create token with admin role
+    const token = jwt.sign({ email, role: "admin" }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    return res.status(200).json({ success: true, token, role: "admin" });
   } catch (error) {
-    res.json({ success: false, msg: error.message });
+    console.error("Admin login error:", error);
+    return res.status(500).json({ success: false, msg: "Server error" });
   }
 };
+
 
 // Logout user
 export const logout = (req, res) => {

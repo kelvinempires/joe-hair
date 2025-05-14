@@ -16,7 +16,6 @@ orderRouter.post('/stripe',authUser,placeOrderStripe );
 orderRouter.post(
   "/paystack",
   (req, res, next) => {
-    console.log("Request received at /paystack");
     next();
   },
   authUser,
@@ -26,7 +25,6 @@ orderRouter.post(
 orderRouter.post(
   "/paystack-webhook",
   (req, res, next) => {
-    console.log("Request received at /paystack-webhook");
     next();
   },
   handlePaystackWebhook
