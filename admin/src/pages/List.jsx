@@ -1,48 +1,62 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { backendUrl, currency } from "../App";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
-  const [loading, setLoading] = useState(true); // State for skeleton loader
-  const [removing, setRemoving] = useState(null); // State for tracking the product being removed
+  const [filteredList, setFilteredList] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [categories, setCategories] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;
+
+  const [viewItem, setViewItem] = useState(null); // For modal view
+  const [loading, setLoading] = useState(true);
+  const [removing, setRemoving] = useState(null);
+
+  const navigate = useNavigate();
 
   const fetchList = async () => {
     try {
-      const response = await axios.get(backendUrl + "/api/product/list");
-      if (response.data.success) {
-        setList(response.data.products);
+      const res = await axios.get(backendUrl + "/api/product/list");
+      if (res.data.success) {
+        setList(res.data.products);
+        setFilteredList(res.data.products);
+        const cats = [
+          ...new Set(res.data.products.map((item) => item.category)),
+        ];
+        setCategories(cats);
       } else {
-        toast.error(response.data.msg);
+        toast.error(res.data.msg);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message);
+    } catch (err) {
+      toast.error(err.message);
     } finally {
-      setLoading(false); // Stop skeleton loader after fetching
+      setLoading(false);
     }
   };
 
   const removeProduct = async (id) => {
-    setRemoving(id); // Set the product ID being removed
+    setRemoving(id);
     try {
-      const response = await axios.post(
+      const res = await axios.post(
         backendUrl + "/api/product/remove",
         { id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      if (response.data.success) {
-        toast.success(response.data.msg);
+      if (res.data.success) {
+        toast.success(res.data.msg);
         fetchList();
       } else {
-        toast.error(response.data.msg);
+        toast.error(res.data.msg);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error(error.message);
+    } catch (err) {
+      toast.error(err.message);
     } finally {
-      setRemoving(null); // Clear the removing state
+      setRemoving(null);
     }
   };
 
@@ -50,83 +64,144 @@ const List = ({ token }) => {
     fetchList();
   }, []);
 
-  if (loading) {
-    // Render skeleton loader while loading
-    return (
-      <div className="flex flex-col gap-2">
-        <p className="mb-2">All products List</p>
-        {/* Skeleton for table header */}
-        <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center py-1 px-2 border border-gray-100 text-sm">
-          <div className="h-5 bg-gray-300 rounded w-full"></div>
-          <div className="h-5 bg-gray-300 rounded w-full"></div>
-          <div className="h-5 bg-gray-300 rounded w-full"></div>
-          <div className="h-5 bg-gray-300 rounded w-full"></div>
-          <div className="h-5 bg-gray-300 rounded w-full"></div>
-          <div className="h-5 bg-gray-300 rounded w-full"></div>
-          <div className="h-5 bg-gray-300 rounded w-full"></div>
-          <div className="h-5 bg-gray-300 rounded w-full"></div>
-          <div className="h-5 bg-gray-300 rounded w-full"></div>
-        </div>
+  useEffect(() => {
+    let filtered = list;
 
-        {/* Skeleton for product rows */}
-        {[...Array(9)].map((_, index) => (
-          <div
-            key={index}
-            className="grid grid-cols-[1fr_3fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center py-1 gap-2 px-2 border border-gray-300 text-sm animate-pulse"
-          >
-            <div className="w-12 h-12 bg-gray-300 rounded"></div>
-            <div className="h-5 bg-gray-300 rounded w-full"></div>
-            <div className="h-5 bg-gray-300 rounded w-full"></div>
-            <div className="h-5 bg-gray-300 rounded w-full hidden md:block"></div>
-            <div className="h-5 bg-gray-300 rounded w-full hidden md:block"></div>
-          </div>
-        ))}
-      </div>
-    );
-  }
+    if (searchQuery) {
+      filtered = filtered.filter((item) =>
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+
+    if (selectedCategory !== "All") {
+      filtered = filtered.filter((item) => item.category === selectedCategory);
+    }
+
+    setFilteredList(filtered);
+    setCurrentPage(1); // Reset to first page on search/filter change
+  }, [searchQuery, selectedCategory, list]);
+
+  const paginatedItems = filteredList.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
 
   return (
-    <>
-      <p className="mb-2">All products List</p>
-      <div className="flex flex-col gap-2">
-        {/* -----------list table title----------- */}
-        <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center py-1 px-2 border border-gray-100 text-sm">
-          <b>Image</b>
-          <b>Name</b>
-          <b>Category</b>
-          <b>Price</b>
-          <b className="text-center">Action</b>
-        </div>
+    <div>
+      <div className="flex flex-col md:flex-row justify-between items-center gap-2 mb-4">
+        <input
+          type="text"
+          placeholder="Search product..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="border px-4 py-2 rounded-md w-full md:w-1/3"
+        />
 
-        {/* -----------product list----------- */}
-        {list.map((item, index) => (
-          <div
-            className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr] items-center py-1 gap-2 px-2 border border-gray-300 text-sm"
-            key={index}
-          >
-            <img className="w-12" src={item.image[0]} alt="" />
-            <p>{item.name}</p>
-            <p>{item.category}</p>
-            <p>
-              {currency}
-              {item.price}
-            </p>
-            <p
+        <select
+          value={selectedCategory}
+          onChange={(e) => setSelectedCategory(e.target.value)}
+          className="border px-4 py-2 rounded-md w-full md:w-auto"
+        >
+          <option value="All">All Categories</option>
+          {categories.map((cat, idx) => (
+            <option key={idx} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-[1fr_2fr_1fr_1fr_1fr] text-sm border-b font-semibold px-2 py-1 hidden md:grid">
+        <span>Image</span>
+        <span>Name</span>
+        <span>Category</span>
+        <span>Price</span>
+        <span className="text-center">Actions</span>
+      </div>
+
+      {paginatedItems.map((item) => (
+        <div
+          key={item._id}
+          className="grid grid-cols-[1fr_2fr_1fr_1fr_1fr] text-sm border-b items-center gap-2 py-2 px-2"
+        >
+          <img src={item.image[0]} alt="" className="w-12 h-12 object-cover" />
+          <p>{item.name}</p>
+          <p>{item.category}</p>
+          <p>
+            {currency}
+            {item.price}
+          </p>
+          <div className="flex gap-2 justify-center">
+            <button
+              onClick={() => setViewItem(item)}
+              className="text-blue-600 hover:underline"
+            >
+              View
+            </button>
+            <button
+              onClick={() => navigate(`/edit/${item._id}`)}
+              className="text-green-600 hover:underline"
+            >
+              Edit
+            </button>
+            <button
               onClick={() => removeProduct(item._id)}
-              className={`text-right md:text-center cursor-pointer text-lg ${
-                removing === item._id ? "pointer-events-none text-gray-400" : ""
+              className={`text-red-600 hover:underline ${
+                removing === item._id && "opacity-50 pointer-events-none"
               }`}
             >
-              {removing === item._id ? (
-                <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full border-gray-300 border-t-black"></div>
-              ) : (
-                "X"
-              )}
-            </p>
+              {removing === item._id ? "..." : "Delete"}
+            </button>
           </div>
+        </div>
+      ))}
+
+      {/* Pagination */}
+      <div className="flex justify-center gap-2 mt-4">
+        {Array.from({ length: totalPages }, (_, idx) => (
+          <button
+            key={idx}
+            onClick={() => setCurrentPage(idx + 1)}
+            className={`px-3 py-1 border rounded ${
+              currentPage === idx + 1
+                ? "bg-blue-600 text-white"
+                : "bg-white text-black"
+            }`}
+          >
+            {idx + 1}
+          </button>
         ))}
       </div>
-    </>
+
+      {/* Modal */}
+      {viewItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-md w-[90%] max-w-lg shadow-lg relative">
+            <button
+              onClick={() => setViewItem(null)}
+              className="absolute top-2 right-2 text-lg font-bold"
+            >
+              &times;
+            </button>
+            <img
+              src={viewItem.image[0]}
+              alt=""
+              className="w-full h-48 object-cover rounded mb-3"
+            />
+            <h2 className="text-xl font-bold mb-1">{viewItem.name}</h2>
+            <p className="text-sm mb-1">
+              Category: <b>{viewItem.category}</b>
+            </p>
+            <p className="text-sm mb-2">
+              Price: {currency}
+              {viewItem.price}
+            </p>
+            <p className="text-sm text-gray-600">{viewItem.description}</p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 

@@ -15,14 +15,15 @@ const PORT = process.env.PORT || 4000;
 // Middleware
 app.use(express.json());
 
+
 app.use(
   cors({
     origin: (origin, callback) => {
       const allowedOrigins = [
         "https://joel-hair.vercel.app",
         "https://joel-admin.vercel.app",
-        "http://localhost:5175",
         "http://localhost:5174",
+        "http://localhost:5173",
       ];
       if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);

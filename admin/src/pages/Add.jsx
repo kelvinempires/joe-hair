@@ -1,385 +1,291 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { assets } from "../assets/admin_assets/assets";
 import axios from "axios";
 import { backendUrl } from "../App";
 import { toast } from "react-toastify";
 
 const Add = ({ token }) => {
-  const [image1, setImage1] = useState(false);
-  const [image2, setImage2] = useState(false);
-  const [image3, setImage3] = useState(false);
-  const [image4, setImage4] = useState(false);
-
+  const [images, setImages] = useState([null, null, null, null]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("Men");
-  const [price, setPrice] = useState("");
   const [subCategory, setSubCategory] = useState("Topwear");
+  const [price, setPrice] = useState("");
   const [sizes, setSizes] = useState([]);
   const [bestseller, setBestseller] = useState(false);
-  const [loading, setLoading] = useState(false); 
-  const [pageLoading, setPageLoading] = useState(true); 
+  const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
-  // Simulate page loading (for demonstration purposes)
-  React.useEffect(() => {
-    setTimeout(() => {
-      setPageLoading(false); // Stop skeleton loader after 2 seconds
-    }, 500);
+  const hasValidImage = images.some((img) => img !== null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setPageLoading(false), 500);
+    return () => clearTimeout(timer);
   }, []);
 
-  const onSubmitHandler = async (e) => {
-    e.preventDefault();
-    console.log("Best Seller:", bestseller); // Debugging
+  useEffect(() => {
+    return () => {
+      images.forEach((img) => {
+        if (img?.preview) URL.revokeObjectURL(img.preview);
+      });
+    };
+  }, [images]);
 
-    if (price <= 0) {
-      toast.error("Price must be greater than 0");
+  const handleImageChange = (index, file) => {
+    const updatedImages = [...images];
+    if (updatedImages[index]?.preview) {
+      URL.revokeObjectURL(updatedImages[index].preview);
+    }
+    file.preview = URL.createObjectURL(file);
+    updatedImages[index] = file;
+    setImages(updatedImages);
+  };
+
+  const handleSizeToggle = useCallback((size) => {
+    setSizes((prev) =>
+      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
+    );
+  }, []);
+
+  const subCategoryOptions = useMemo(() => {
+    switch (category) {
+      case "Men":
+      case "Women":
+        return ["Topwear", "Bottomwear", "Winterwear"];
+      case "Kids":
+        return ["Boys", "Girls", "Accessories"];
+      default:
+        return [];
+    }
+  }, [category]);
+
+  useEffect(() => {
+    setSubCategory(subCategoryOptions[0] || "");
+  }, [category, subCategoryOptions]);
+
+  const resetForm = () => {
+    setImages([null, null, null, null]);
+    setName("");
+    setDescription("");
+    setCategory("Men");
+    setSubCategory("Topwear");
+    setPrice("");
+    setSizes([]);
+    setBestseller(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!name.trim() || !description.trim()) {
+      toast.error("Please enter product name and description");
       return;
     }
-    setLoading(true); // Start loading spinner
+
+    if (price <= 0 || isNaN(price)) {
+      toast.error("Price must be a valid number greater than 0");
+      return;
+    }
+
+    if (sizes.length === 0) {
+      toast.error("Please select at least one size");
+      return;
+    }
+
+    if (!hasValidImage) {
+      toast.error("Please upload at least one image");
+      return;
+    }
+
+    setLoading(true);
     try {
       const formData = new FormData();
       formData.append("name", name);
       formData.append("description", description);
       formData.append("category", category);
-      formData.append("price", price);
       formData.append("subCategory", subCategory);
+      formData.append("price", price);
       formData.append("bestseller", bestseller);
       formData.append("sizes", JSON.stringify(sizes));
-
-      image1 && formData.append("image1", image1);
-      image2 && formData.append("image2", image2);
-      image3 && formData.append("image3", image3);
-      image4 && formData.append("image4", image4);
+      images.forEach((img, i) => {
+        if (img) formData.append(`image${i + 1}`, img);
+      });
 
       const response = await axios.post(
-        backendUrl + "/api/product/add",
+        `${backendUrl}/api/product/add`,
         formData,
-        { headers: { Authorization: `Bearer ${token}` } }
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
       );
-      console.log(response.data); // Debugging
+
       if (response.data.success) {
         toast.success(response.data.message);
-        setName("");
-        setDescription("");
-        setImage1(false);
-        setImage2(false);
-        setImage3(false);
-        setImage4(false);
-        setPrice("");
-        setSizes([]);
-        setBestseller(false);
+        setTimeout(() => {
+          resetForm();
+        }, 2000);
       } else {
         toast.error(response.data.message);
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.message);
+      toast.error("Something went wrong");
     } finally {
-      setLoading(false); // Stop loading spinner
+      setLoading(false);
     }
   };
 
+  const isFormValid =
+    name.trim() &&
+    description.trim() &&
+    !isNaN(price) &&
+    Number(price) > 0 &&
+    sizes.length > 0 &&
+    hasValidImage;
+
   if (pageLoading) {
-    // Render skeleton loader while the page is loading
-    return (
-      <div className="flex flex-col w-full items-start gap-4 animate-pulse">
-        {/* Skeleton for the image upload section */}
-        <div className="w-full">
-          <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
-          <div className="flex gap-2">
-            <div className="w-20 h-20 bg-gray-300 rounded"></div>
-            <div className="w-20 h-20 bg-gray-300 rounded"></div>
-            <div className="w-20 h-20 bg-gray-300 rounded"></div>
-            <div className="w-20 h-20 bg-gray-300 rounded"></div>
-          </div>
-        </div>
-
-        {/* Skeleton for the product name input */}
-        <div className="w-full">
-          <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
-          <div className="h-10 bg-gray-300 rounded w-full max-w-[500px]"></div>
-        </div>
-
-        {/* Skeleton for the product description */}
-        <div className="w-full">
-          <div className="h-5 bg-gray-300 rounded mb-2 w-48"></div>
-          <div className="h-20 bg-gray-300 rounded w-full max-w-[500px]"></div>
-        </div>
-
-        {/* Skeleton for the dropdowns */}
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:gap-8">
-          <div className="w-full">
-            <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
-            <div className="h-10 bg-gray-300 rounded w-full"></div>
-          </div>
-          <div className="w-full">
-            <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
-            <div className="h-10 bg-gray-300 rounded w-full"></div>
-          </div>
-          <div className="w-full">
-            <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
-            <div className="h-10 bg-gray-300 rounded w-full sm:w-[120px]"></div>
-          </div>
-        </div>
-
-        {/* Skeleton for the sizes */}
-        <div className="w-full">
-          <div className="h-5 bg-gray-300 rounded mb-2 w-32"></div>
-          <div className="flex gap-3">
-            <div className="h-8 w-8 bg-gray-300 rounded"></div>
-            <div className="h-8 w-8 bg-gray-300 rounded"></div>
-            <div className="h-8 w-8 bg-gray-300 rounded"></div>
-            <div className="h-8 w-8 bg-gray-300 rounded"></div>
-            <div className="h-8 w-8 bg-gray-300 rounded"></div>
-          </div>
-        </div>
-
-        {/* Skeleton for the checkbox */}
-        <div className="flex gap-2 mt-2 items-center">
-          <div className="h-5 w-5 bg-gray-300 rounded"></div>
-          <div className="h-5 bg-gray-300 rounded w-32"></div>
-        </div>
-
-        {/* Skeleton for the button */}
-        <div className="w-28 h-10 bg-gray-300 rounded"></div>
-      </div>
-    );
+    return <div className="animate-pulse text-gray-400">Loading form...</div>;
   }
 
   return (
     <form
-      onSubmit={onSubmitHandler}
-      className="flex flex-col w-full items-start gap-3"
+      onSubmit={handleSubmit}
+      className="flex flex-col w-full items-start gap-4"
     >
       <div>
-        <p className="mb-2">Upload Image</p>
+        <p className="mb-2 font-semibold">Upload Images</p>
         <div className="flex gap-2">
-          <label htmlFor="image1">
-            <img
-              className="w-20"
-              src={!image1 ? assets.upload_area : URL.createObjectURL(image1)}
-              alt="upload_area img"
-            />
-            <input
-              onChange={(e) => setImage1(e.target.files[0])}
-              type="file"
-              id="image1"
-              hidden
-            />
-          </label>
-          <label htmlFor="image2">
-            <img
-              className="w-20"
-              src={!image2 ? assets.upload_area : URL.createObjectURL(image2)}
-              alt="upload_area img"
-            />
-            <input
-              onChange={(e) => setImage2(e.target.files[0])}
-              type="file"
-              id="image2"
-              hidden
-            />
-          </label>
-          <label htmlFor="image3">
-            <img
-              className="w-20"
-              src={!image3 ? assets.upload_area : URL.createObjectURL(image3)}
-              alt="upload_area img"
-            />
-            <input
-              onChange={(e) => setImage3(e.target.files[0])}
-              type="file"
-              id="image3"
-              hidden
-            />
-          </label>
-          <label htmlFor="image4">
-            <img
-              className="w-20"
-              src={!image4 ? assets.upload_area : URL.createObjectURL(image4)}
-              alt="upload_area img"
-            />
-            <input
-              onChange={(e) => setImage4(e.target.files[0])}
-              type="file"
-              id="image4"
-              hidden
-            />
-          </label>
+          {images.map((img, index) => (
+            <label key={index} htmlFor={`image${index}`}>
+              <img
+                className={`w-20 h-20 object-cover rounded border ${
+                  !img && !hasValidImage ? "border-red-500" : "border-gray-300"
+                }`}
+                src={img ? img.preview : assets.upload_area}
+                alt="upload preview"
+                title="Click to upload image"
+              />
+              <input
+                type="file"
+                id={`image${index}`}
+                hidden
+                accept="image/*"
+                onChange={(e) => handleImageChange(index, e.target.files[0])}
+              />
+            </label>
+          ))}
         </div>
       </div>
-      <div className="w-full">
-        <p className="mb-2">Product Name</p>
+
+      <div className="w-full max-w-[500px]">
+        <label className="block mb-1">Product Name</label>
         <input
-          onChange={(e) => setName(e.target.value)}
+          className="w-full px-3 py-2 border rounded"
+          type="text"
           value={name}
-          className="w-full max-w-[500px] px-3 py-2"
-          type="text"
-          placeholder="type here"
+          onChange={(e) => setName(e.target.value)}
           required
         />
       </div>
-      <div className="w-full">
-        <p className="mb-2">Product Description</p>
+
+      <div className="w-full max-w-[500px]">
+        <label className="block mb-1">Description</label>
         <textarea
-          onChange={(e) => setDescription(e.target.value)}
+          className="w-full px-3 py-2 border rounded"
           value={description}
-          className="w-full max-w-[500px] px-3 py-2"
-          type="text"
-          placeholder="Write content here"
+          onChange={(e) => setDescription(e.target.value)}
           required
         />
       </div>
-      <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
-        <div>
-          <p className="mb-2">Product Category</p>
+
+      <div className="flex flex-wrap gap-4 w-full">
+        <div className="flex flex-col">
+          <label className="mb-1">Category</label>
           <select
+            className="px-3 py-2 border rounded"
+            value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full px-3 py-2"
           >
             <option value="Men">Men</option>
             <option value="Women">Women</option>
             <option value="Kids">Kids</option>
           </select>
         </div>
-        <div>
-          <p className="mb-2">sub Category</p>
+
+        <div className="flex flex-col">
+          <label className="mb-1">Subcategory</label>
           <select
+            className="px-3 py-2 border rounded"
+            value={subCategory}
             onChange={(e) => setSubCategory(e.target.value)}
-            className="w-full px-3 py-2"
           >
-            <option value="Topwear">Topwear</option>
-            <option value="Bottomwear">Bottomwear</option>
-            <option value="Winterwear">Winterwear</option>
+            {subCategoryOptions.map((sub) => (
+              <option key={sub} value={sub}>
+                {sub}
+              </option>
+            ))}
           </select>
         </div>
-        <div>
-          <p className="mb-2">Product Price</p>
+
+        <div className="flex flex-col">
+          <label className="mb-1">Price (₦)</label>
           <input
-            onChange={(e) => setPrice(e.target.value)}
-            value={price}
-            className="w-full px-3 py-2 sm:w-[120px]"
+            className="px-3 py-2 border rounded"
             type="number"
-            placeholder="type here"
+            min="0"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
           />
         </div>
       </div>
+
       <div>
-        <p className="mb-2">Product Sizes</p>
-        <div className="flex gap-3">
-          <div
-            onClick={() =>
-              setSizes((prev) =>
-                prev.includes("S")
-                  ? prev.filter((item) => item !== "S")
-                  : [...prev, "S"]
-              )
-            }
-            value={name}
-          >
-            <p
-              className={`${
-                sizes.includes("S") ? "bg-pink-100" : "bg-slate-200"
-              } px-3 py-1 cursor-pointer`}
+        <label className="block mb-1">Sizes</label>
+        <div className="flex gap-2">
+          {["S", "M", "L", "XL", "XXL"].map((size) => (
+            <span
+              key={size}
+              role="button"
+              tabIndex={0}
+              aria-pressed={sizes.includes(size)}
+              onClick={() => handleSizeToggle(size)}
+              onKeyDown={(e) =>
+                (e.key === "Enter" || e.key === " ") && handleSizeToggle(size)
+              }
+              className={`cursor-pointer px-3 py-1 border rounded focus:outline-none ${
+                sizes.includes(size)
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-gray-100 border-gray-300"
+              }`}
             >
-              S
-            </p>
-          </div>
-          <div
-            onClick={() =>
-              setSizes((prev) =>
-                prev.includes("M")
-                  ? prev.filter((item) => item !== "M")
-                  : [...prev, "M"]
-              )
-            }
-            value={name}
-          >
-            <p
-              className={`${
-                sizes.includes("M") ? "bg-pink-100" : "bg-slate-200"
-              } px-3 py-1 cursor-pointer`}
-            >
-              M
-            </p>
-          </div>
-          <div
-            onClick={() =>
-              setSizes((prev) =>
-                prev.includes("L")
-                  ? prev.filter((item) => item !== "L")
-                  : [...prev, "L"]
-              )
-            }
-            value={name}
-          >
-            <p
-              className={`${
-                sizes.includes("L") ? "bg-pink-100" : "bg-slate-200"
-              } px-3 py-1 cursor-pointer`}
-            >
-              L
-            </p>
-          </div>
-          <div
-            onClick={() =>
-              setSizes((prev) =>
-                prev.includes("XL")
-                  ? prev.filter((item) => item !== "XL")
-                  : [...prev, "XL"]
-              )
-            }
-            value={name}
-          >
-            <p
-              className={`${
-                sizes.includes("XL") ? "bg-pink-100" : "bg-slate-200"
-              } px-3 py-1 cursor-pointer`}
-            >
-              XL
-            </p>
-          </div>
-          <div
-            onClick={() =>
-              setSizes((prev) =>
-                prev.includes("XXL")
-                  ? prev.filter((item) => item !== "XXL")
-                  : [...prev, "XXL"]
-              )
-            }
-            value={name}
-          >
-            <p
-              className={`${
-                sizes.includes("XXL") ? "bg-pink-100" : "bg-slate-200"
-              } px-3 py-1 cursor-pointer`}
-            >
-              XXL
-            </p>
-          </div>
+              {size}
+            </span>
+          ))}
         </div>
       </div>
-      <div className="flex gap-2 mt-2">
+
+      <div className="flex items-center gap-2">
         <input
-          onChange={() => setBestseller((prev) => !prev)}
-          checked={bestseller}
           type="checkbox"
-          id="bestseller"
+          checked={bestseller}
+          onChange={() => setBestseller(!bestseller)}
         />
-        <label className="cursor-pointer" htmlFor="bestseller">
-          Add to Best Seller
-        </label>
+        <label>Mark as Bestseller</label>
       </div>
+
       <button
-        className="w-28 py-3 mt-4 bg-black text-white flex justify-center items-center"
         type="submit"
-        disabled={loading} // Disable button while loading
+        disabled={!isFormValid || loading}
+        className={`px-4 py-2 text-white rounded transition ${
+          loading
+            ? "bg-gray-500 cursor-not-allowed"
+            : isFormValid
+            ? "bg-green-600 hover:bg-green-700"
+            : "bg-gray-300 cursor-not-allowed"
+        }`}
       >
-        {loading ? (
-          <div className="spinner-border animate-spin inline-block w-4 h-4 border-2 rounded-full border-white border-t-transparent"></div>
-        ) : (
-          "Add"
-        )}
+        {loading ? "Submitting..." : "Add Product"}
       </button>
     </form>
   );

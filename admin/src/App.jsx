@@ -28,7 +28,7 @@ const App = () => {
       ) : (
         <>
           <Navbar setToken={setToken} />
-          
+
           <div className="flex w-full">
             <Sidebar />
             <div className="w-[70%] mx-auto ml-[max(5vh,25px)] my-8 text-gray-600 text-base h-[calc(100vh-10px)] overflow-y-scroll">
@@ -36,6 +36,7 @@ const App = () => {
                 <Route path="/add" element={<Add token={token} />} />
                 <Route path="/list" element={<List token={token} />} />
                 <Route path="/orders" element={<Orders token={token} />} />
+                {/* <Route path="/edit/:id" element={<EditProduc token={token} />}/> */}
               </Routes>
             </div>
           </div>
