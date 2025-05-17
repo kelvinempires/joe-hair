@@ -112,8 +112,8 @@ const List = ({ token }) => {
         </select>
       </div>
 
-      <div className="grid grid-cols-[1fr_2fr_1fr_1fr_1fr] text-sm border-b font-semibold px-2 py-1 hidden md:grid">
-        <span>Image</span>
+      <div className="grid grid-cols-[1fr_2fr_1fr_1fr_1fr] text-sm border-b font-semibold px-2 py-1  md:grid">
+        <span >Image</span>
         <span>Name</span>
         <span>Category</span>
         <span>Price</span>

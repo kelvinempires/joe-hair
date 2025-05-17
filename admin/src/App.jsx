@@ -31,7 +31,7 @@ const App = () => {
 
           <div className="flex w-full">
             <Sidebar />
-            <div className="w-[70%] mx-auto ml-[max(5vh,25px)] my-8 text-gray-600 text-base h-[calc(100vh-10px)] overflow-y-scroll">
+            <div className="w-[70%] mx-auto ml-[max(5vh,25px)] my-8 text-gray-600 text-base h-[calc(100vh-10px)] overflow-y-scroll scrollbar-hide">
               <Routes>
                 <Route path="/add" element={<Add token={token} />} />
                 <Route path="/list" element={<List token={token} />} />
