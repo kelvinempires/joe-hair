@@ -14,7 +14,7 @@ const List = ({ token }) => {
   const itemsPerPage = 8;
 
   const [viewItem, setViewItem] = useState(null); // For modal view
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [removing, setRemoving] = useState(null);
 
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const List = ({ token }) => {
     } catch (err) {
       toast.error(err.message);
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
