@@ -113,7 +113,7 @@ const List = ({ token }) => {
       </div>
 
       <div className="grid grid-cols-[1fr_2fr_1fr_1fr_1fr] text-sm border-b font-semibold px-2 py-1  md:grid">
-        <span >Image</span>
+        <span>Image</span>
         <span>Name</span>
         <span>Category</span>
         <span>Price</span>
@@ -140,7 +140,7 @@ const List = ({ token }) => {
               View
             </button>
             <button
-              onClick={() => navigate(`/edit/${item._id}`)}
+              onClick={() => item?._id && navigate(`/edit/${item._id}`)}
               className="text-green-600 hover:underline"
             >
               Edit

@@ -448,8 +448,25 @@ const userOrders = async (req, res) => {
 const updateStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
-    await orderModel.findByIdAndUpdate(orderId, { status });
-    res.json({ success: true, message: "Status updated successfully" });
+
+    const updatedOrder = await orderModel.findByIdAndUpdate(
+      orderId,
+      { status },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Status updated successfully",
+      order: updatedOrder, // optional: return updated order
+    });
   } catch (error) {
     console.error("Error updating order status:", error.message);
     res.status(500).json({
@@ -458,6 +475,7 @@ const updateStatus = async (req, res) => {
     });
   }
 };
+
 
 export {
   placeOrder,
