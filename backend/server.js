@@ -18,15 +18,21 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: [
-      "https://joel-hair.vercel.app",
-      "https://joel-admin.vercel.app",
-      "http://localhost:5174",
-      "http://localhost:5173",
-    ],
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        "https://joel-hair.vercel.app",
+        "https://joel-admin.vercel.app",
+        "http://localhost:5174",
+        "http://localhost:5173",
+      ];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Allow cookies or authentication headers
   })
 );
 
