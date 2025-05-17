@@ -143,14 +143,21 @@ const filteredOrders = orders.filter((order) => {
       <h3>Order Page</h3>
 
       <div className="flex flex-wrap gap-4 my-4 justify-between items-center">
-        <div className="flex gap-3">
-          <input
-            type="text"
-            placeholder="Search by customer name"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border border-gray-300 p-2 rounded"
-          />
+        <div className="flex gap-3 sm:flex-row flex-col">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search by customer name"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="border border-gray-300 p-2 pl-10 rounded"
+            />
+            <img
+              src={assets.search_icon}
+              alt="Search Icon"
+              className="absolute left-2 top-1/2 transform -translate-y-1/2 w-5 h-5"
+            />
+          </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -186,16 +193,25 @@ const filteredOrders = orders.filter((order) => {
             className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-3 items-start border-2 border-gray-200 p-5 md:p-8 my-3 md:my-4 text-sx sm:text-sm text-gray-700"
             key={index}
           >
-            <img className="w-12" src={assets.parcel_icon} alt="parcel_icon" />
+            <div>
+              {order.items.map((item) => (
+                <img
+                  className="w-full sm:w-28 h-full sm:h-30 rounded"
+                  src={item.image}
+                  alt="parcel_icon"
+                />
+              ))}
+            </div>
+
             <div>
               <div>
                 {order.items.map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2 py-0.5">
-                    <img
+                    {/* <img
                       src={item.image}
                       alt={item.name}
                       className="w-8 h-8 object-cover rounded"
-                    />
+                    /> */}
                     <span>
                       {item.name} x {item.quantity} <span>{item.size}</span>
                       {idx !== order.items.length - 1 ? "," : ""}
