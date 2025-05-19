@@ -66,13 +66,6 @@ export const registerUser = async (req, res) => {
     // Generate token and set cookie
     const token = createToken(user._id);
 
-    // Set cookie with token
-    // res.cookie("token", token, {
-    //   httpOnly: true,
-    //   secure: process.env.NODE_ENV === "production",
-    //   sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
-    //   maxAge: 7 * 24 * 60 * 60 * 1000,
-    // });
 
     // Send welcome email
     const mailOptions = {
@@ -82,7 +75,7 @@ export const registerUser = async (req, res) => {
       html: `
         <html>
           <body>
-            <h2>Welcome to Our Platform!</h2>
+            <h2>Welcome to joel hair Empire!</h2>
             <p>Hello ${name},</p>
             <p>Your account has been created successfully with email: ${email}.</p>
           </body>
