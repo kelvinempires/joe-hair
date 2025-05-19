@@ -8,10 +8,25 @@ import {
 } from "../config/emailtemplate.js";
 import transporter from "../config/nodmailer.js";
 
-const createToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: "7d",
-  });
+// const createToken = (id) => {
+//   return jwt.sign({ id }, process.env.JWT_SECRET, {
+//     expiresIn: "7d",
+//   });
+// };
+
+
+const createToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+      role: user.role || "user", // optional: if you want role-based auth
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "7d",
+    }
+  );
 };
 
 // Helper function to set cookie
@@ -112,8 +127,7 @@ export const loginUser = async (req, res) => {
     }
 
     // Generate token and set cookie
-    const token = createToken(user._id);
-
+    const token = createToken(user);
     // res.cookie("token", token, {
     //   httpOnly: true,
     //   secure: process.env.NODE_ENV === "production",
