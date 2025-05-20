@@ -8,14 +8,14 @@ const ProductRow = ({
   removeProduct,
   removing,
 }) => (
-  <div className="grid grid-cols-2 md:grid-cols-[1fr_1fr_1fr_1fr_1fr] text-sm items-center gap-4 border-b py-2 px-2">
+  <div className="grid grid-cols-2 md:grid-cols-[1fr_2fr_1fr_1fr_1fr] text-sm items-center gap-4 border-b py-2 px-2">
     <img
       src={item.image[0]}
       alt={item.name}
-      className="w-12 h-12 rounded object-cover"
+      className="w-24 sm:w-16 h-24 sm:h-16 rounded object-cover"
     />
     <p>{item.name}</p>
-    <p>{item.category}</p>
+    <p className="hidden md:block">{item.category}</p>
     <p>
       {currency}
       {item.price}

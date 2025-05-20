@@ -104,10 +104,10 @@ const List = ({ token }) => {
         categories={categories}
       />
 
-      <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr] text-sm font-semibold px-2 py-2 border-b bg-gray-100 rounded">
+      <div className="grid grid-cols-[1fr_1fr_1fr_1fr_1fr] sm:grid-cols-[1fr_2fr_1fr_1fr_1fr] text-sm font-semibold px-2 py-2 border-b bg-gray-100 rounded">
         <span>Image</span>
         <span>Name</span>
-        <span>Category</span>
+        <span className="hidden sm:block">Category</span>
         <span>Price</span>
         <span className="text-center">Actions</span>
       </div>
