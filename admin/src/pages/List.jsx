@@ -140,11 +140,14 @@ const List = ({ token }) => {
               View
             </button>
             <button
-              onClick={() => item?._id && navigate(`/edit/${item._id}`)}
+              onClick={() =>
+                item?._id && navigate(`/edit/${item._id.replace(/"/g, "")}`)
+              }
               className="text-green-600 hover:underline"
             >
               Edit
             </button>
+
             <button
               onClick={() => removeProduct(item._id)}
               className={`text-red-600 hover:underline ${

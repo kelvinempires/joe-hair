@@ -1,5 +1,6 @@
 import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/product.model.js";
+import mongoose from "mongoose"; 
 
 // Add Product
 const addProduct = async (req, res) => {
@@ -182,24 +183,9 @@ const updateProduct = async (req, res) => {
     const image3 = req.files.image3 && req.files.image3[0];
     const image4 = req.files.image4 && req.files.image4[0];
 
-    const images = [image1, image2, image3, image4].filter(Boolean);
-
-    let imageUrl = [];
-    if (images.length > 0) {
-      imageUrl = await Promise.all(
-        images.map(async (file) => {
-          try {
-            const result = await cloudinary.uploader.upload(file.path, {
-              resource_type: "image",
-            });
-            return result.secure_url;
-          } catch (error) {
-            console.error("Error uploading image to Cloudinary:", error.message);
-            throw new Error("Failed to upload image. Please try again.");
-          }
-        })
-      );
-    }
+const imageUrl = [image1, image2, image3, image4]
+  .filter(Boolean)
+  .map((f) => f.path);
 
     // Parse sizes
     let parsedSizes = [];
@@ -236,4 +222,31 @@ const updateProduct = async (req, res) => {
   }
 };
 
-export { listProduct, removeProduct, singleProduct, addProduct, updateProduct };
+const singleProductById =  async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid product ID" });
+    }
+
+    const product = await productModel.findById(productId);
+
+    if (!product) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Product not found" });
+    }
+
+    res.json({ success: true, product });
+  } catch (error) {
+    console.error("Error fetching product:", error.message);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+
+
+export { listProduct, removeProduct, singleProduct, addProduct, updateProduct, singleProductById };
