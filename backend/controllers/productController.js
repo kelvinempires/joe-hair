@@ -151,6 +151,7 @@ const singleProduct = async (req, res) => {
 };
 
 // Update Product
+// Update Product
 const updateProduct = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -162,57 +163,65 @@ const updateProduct = async (req, res) => {
       subCategory,
       sizes,
       bestseller,
+      existingImages = "[]",
     } = req.body;
 
-    // Validate required fields
-    if (!name || !price || !category) {
-      return res.status(400).json({
-        success: false,
-        msg: "Name, price, and category are required.",
-      });
-    }
-
-    const existingProduct = await productModel.findById(productId);
-    if (!existingProduct) {
-      return res.status(404).json({ success: false, msg: "Product not found" });
-    }
-
-    // Process uploaded image files
-    const image1 = req.files.image1 && req.files.image1[0];
-    const image2 = req.files.image2 && req.files.image2[0];
-    const image3 = req.files.image3 && req.files.image3[0];
-    const image4 = req.files.image4 && req.files.image4[0];
-
-const imageUrl = [image1, image2, image3, image4]
-  .filter(Boolean)
-  .map((f) => f.path);
-
-    // Parse sizes
     let parsedSizes = [];
+    let parsedExistingImages = [];
+
     try {
-      parsedSizes = JSON.parse(sizes);
+      parsedSizes = JSON.parse(sizes || "[]");
+      parsedExistingImages = JSON.parse(existingImages);
     } catch (error) {
       return res.status(400).json({
         success: false,
-        msg: "Invalid sizes format. Please provide a valid JSON array.",
+        msg: "Invalid JSON format for sizes or existing images",
       });
     }
 
-    const updatedProduct = {
-      name,
-      description,
-      category,
-      price: Number(price),
-      subCategory,
-      bestseller: bestseller === "true" || bestseller === true,
-      sizes: parsedSizes,
-      image: imageUrl.length > 0 ? imageUrl : existingProduct.image,
-      date: Date.now(),
-    };
+    const image1 = req.files.image1?.[0];
+    const image2 = req.files.image2?.[0];
+    const image3 = req.files.image3?.[0];
+    const image4 = req.files.image4?.[0];
 
-    await productModel.findByIdAndUpdate(productId, updatedProduct);
+    const newImages = [image1, image2, image3, image4].filter(Boolean);
+    let uploadedImages = [];
 
-    res.json({ success: true, message: "Product updated successfully" });
+    if (newImages.length > 0) {
+      uploadedImages = await Promise.all(
+        newImages.map(async (img) => {
+          const result = await cloudinary.uploader.upload(img.path, {
+            resource_type: "image",
+          });
+          return result.secure_url;
+        })
+      );
+    }
+
+    // Merge and limit to max 4 images
+    const allImages = [...parsedExistingImages, ...uploadedImages].slice(0, 4);
+
+    const updated = await productModel.findByIdAndUpdate(
+      productId,
+      {
+        name,
+        description,
+        category,
+        subCategory,
+        price: Number(price),
+        bestseller: String(bestseller).toLowerCase() === "true",
+        sizes: parsedSizes,
+        image: allImages,
+        updatedAt: Date.now(),
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Product updated successfully",
+      product: updated,
+    });
   } catch (error) {
     console.error("Error updating product:", error.message);
     res.status(500).json({
@@ -221,6 +230,8 @@ const imageUrl = [image1, image2, image3, image4]
     });
   }
 };
+
+
 
 const singleProductById =  async (req, res) => {
   try {
