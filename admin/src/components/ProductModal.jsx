@@ -1,4 +1,5 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 const ProductModal = ({ viewItem, setViewItem, currency }) => {
   if (!viewItem) return null;
